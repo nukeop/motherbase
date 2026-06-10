@@ -5,7 +5,14 @@
 	"workspaces": [
 		"packages/*"
 	],
+	"scripts": {
+		"dev": "bun --filter @motherbase/web dev",
+		"format": "biome format --write",
+		"lint": "biome check --write",
+		"typecheck": "bun --filter '*' typecheck"
+	},
 	"devDependencies": {
+		"@biomejs/biome": "2.4.16",
 		"@types/bun": "latest",
 		"typescript": "^5.9.3"
 	}
