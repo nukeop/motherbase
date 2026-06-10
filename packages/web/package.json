@@ -1,0 +1,8 @@
+{
+	"name": "@motherbase/web",
+	"private": true,
+	"type": "module",
+	"dependencies": {
+		"@motherbase/core": "workspace:*"
+	}
+}
