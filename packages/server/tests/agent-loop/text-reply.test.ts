@@ -5,14 +5,12 @@ describe("text reply turn", () => {
   test("a sent message streams back a text reply and the session returns to idle", async () => {
     const scenario = createScenario();
 
-    scenario.scriptTurn({
-      stream: [
-        { type: "text-delta", text: "Hi" },
-        { type: "text-delta", text: " there" },
-        { type: "text-delta", text: "!" },
-      ],
-      finish: "stop",
-    });
+		scenario.scriptTurn([
+			{ type: "text-delta", text: "Hi" },
+			{ type: "text-delta", text: " there" },
+			{ type: "text-delta", text: "!" },
+			{ type: "finish", reason: "stop" },
+		]);
 
     await scenario.sendMessage("Hello Motherbase");
 
@@ -45,15 +43,13 @@ describe("text reply turn", () => {
 	test("reasoning deltas stream before the text and the completed message keeps the reasoning part", async () => {
 		const scenario = createScenario();
 
-		scenario.scriptTurn({
-			stream: [
-				{ type: "reasoning-delta", text: "The user greeted me. " },
-				{ type: "reasoning-delta", text: "I should greet back." },
-				{ type: "text-delta", text: "Hey" },
-				{ type: "text-delta", text: "!" },
-			],
-			finish: "stop",
-		});
+		scenario.scriptTurn([
+			{ type: "reasoning-delta", text: "The user greeted me. " },
+			{ type: "reasoning-delta", text: "I should greet back." },
+			{ type: "text-delta", text: "Hey" },
+			{ type: "text-delta", text: "!" },
+			{ type: "finish", reason: "stop" },
+		]);
 
 		await scenario.sendMessage("Hello again");
 
