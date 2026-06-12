@@ -1,13 +1,9 @@
-import {
-  type AgentEvent,
-  createSession,
-  type Session,
-} from "@motherbase/core";
+import { type AgentEvent, Session } from "@motherbase/core";
 import {
   createModelClient,
   type ModelChunk,
 } from "../../src/agent/model-client";
-import { createRunner, type Runner } from "../../src/agent/runner";
+import { Runner } from "../../src/agent/runner";
 import { createMockModel } from "./mock-model";
 
 export type Scenario = {
@@ -20,7 +16,7 @@ export type Scenario = {
 
 export const createScenario = (): Scenario => {
   const events: AgentEvent[] = [];
-  const session = createSession({ projectId: crypto.randomUUID() });
+  const session = Session.create({ projectId: crypto.randomUUID() });
   let script: ModelChunk[];
   let runner: Runner;
 
@@ -29,7 +25,7 @@ export const createScenario = (): Scenario => {
       script = chunks;
     },
     sendMessage: async (text) => {
-      runner = createRunner(session, {
+      runner = new Runner(session, {
         model: createModelClient(createMockModel(script)),
         emit: (event) => events.push(event),
       });

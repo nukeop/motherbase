@@ -10,18 +10,32 @@ export const sessionSnapshotSchema = z.object({
 
 export type SessionSnapshot = z.infer<typeof sessionSnapshotSchema>;
 
-export type Session = {
-  readonly id: string;
-  readonly projectId: string;
-  readonly parentSessionId: string | null;
-  readonly history: readonly HistoryEntry[];
-  snapshot: () => SessionSnapshot;
-};
+export class Session {
+  #history: HistoryEntry[];
 
-export const createSession = (input: { projectId: string }): Session => {
-  throw new Error("not implemented");
-};
+  private constructor(
+    readonly id: string,
+    readonly projectId: string,
+    readonly parentSessionId: string | null,
+    history: HistoryEntry[],
+  ) {
+    this.#history = history;
+  }
 
-export const loadSession = (snapshot: SessionSnapshot): Session => {
-  throw new Error("not implemented");
-};
+  static create(input: { projectId: string }): Session {
+    return new Session(crypto.randomUUID(), input.projectId, null, []);
+  }
+
+  get history(): readonly HistoryEntry[] {
+    return this.#history;
+  }
+
+  snapshot(): SessionSnapshot {
+    return sessionSnapshotSchema.parse({
+      id: this.id,
+      projectId: this.projectId,
+      parentSessionId: this.parentSessionId,
+      history: this.#history,
+    });
+  }
+}

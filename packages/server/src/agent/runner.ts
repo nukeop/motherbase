@@ -11,11 +11,17 @@ export type Deps = {
   emit: (event: AgentEvent) => void;
 };
 
-export type Runner = {
-  readonly state: MachineState;
-  send: (message: MessageEntry) => Promise<void>;
-};
+export class Runner {
+  #state: MachineState = { type: "idle" };
 
-export const createRunner = (session: Session, deps: Deps): Runner => {
-  throw new Error("not implemented");
-};
+  constructor(
+    private readonly session: Session,
+    private readonly deps: Deps,
+  ) {}
+
+  get state(): MachineState {
+    return this.#state;
+  }
+
+  async send(message: MessageEntry): Promise<void> {}
+}
