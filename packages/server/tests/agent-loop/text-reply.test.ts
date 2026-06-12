@@ -29,9 +29,9 @@ describe("text reply turn", () => {
       { type: "turn-completed" },
     ]);
 
-    expect(scenario.state).toEqual({ type: "idle" });
+		expect(scenario.runner.state).toEqual({ type: "idle" });
 
-    expect(scenario.history).toEqual([
+		expect(scenario.session.history).toEqual([
       {
         kind: "message",
         role: "user",
@@ -75,7 +75,7 @@ describe("text reply turn", () => {
       { type: "turn-completed" },
     ]);
 
-    expect(scenario.history).toEqual([
+		expect(scenario.session.history).toEqual([
       {
         kind: "message",
         role: "user",

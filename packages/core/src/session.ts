@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { historyEntrySchema } from "./history";
+import { type HistoryEntry, historyEntrySchema } from "./history";
 
 export const sessionSnapshotSchema = z.object({
   id: z.uuid(),
@@ -9,3 +9,19 @@ export const sessionSnapshotSchema = z.object({
 });
 
 export type SessionSnapshot = z.infer<typeof sessionSnapshotSchema>;
+
+export type Session = {
+  readonly id: string;
+  readonly projectId: string;
+  readonly parentSessionId: string | null;
+  readonly history: readonly HistoryEntry[];
+  snapshot: () => SessionSnapshot;
+};
+
+export const createSession = (input: { projectId: string }): Session => {
+  throw new Error("not implemented");
+};
+
+export const loadSession = (snapshot: SessionSnapshot): Session => {
+  throw new Error("not implemented");
+};
