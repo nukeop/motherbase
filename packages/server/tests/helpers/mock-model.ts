@@ -19,6 +19,10 @@ const toStreamParts = (chunks: ModelChunk[]): LanguageModelV3StreamPart[] => {
   };
 
   const openBlockFor = (kind: BlockKind) => {
+    if (openBlock) {
+      return openBlock;
+    }
+
     openBlock = { kind, id: crypto.randomUUID() }
     parts.push({ type: `${kind}-start`, id: openBlock.id })
     return openBlock;
