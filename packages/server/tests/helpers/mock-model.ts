@@ -19,7 +19,13 @@ const toStreamParts = (chunks: ModelChunk[]): LanguageModelV3StreamPart[] => {
   };
 
   const openBlockFor = (kind: BlockKind) => {
+    if (openBlock && openBlock.kind !== kind) {
+      // This means we're transitioning from reasoning to talking or vice versa
+      closeBlock();
+    }
+
     if (openBlock) {
+      // This means we're processing the next chunk of the same block
       return openBlock;
     }
 
