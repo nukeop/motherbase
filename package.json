@@ -9,7 +9,9 @@
     "dev": "bun --filter @motherbase/web dev",
     "format": "biome format --write",
     "lint": "biome check --write",
-    "typecheck": "bun --filter '*' typecheck"
+    "typecheck": "bun --filter '*' typecheck",
+    "test": "bun test",
+    "test:coverage": "bun test --coverage --coverage-reporter=text --coverage-reporter=lcov"
   },
   "devDependencies": {
     "@biomejs/biome": "2.4.16",
