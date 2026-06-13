@@ -1,0 +1,27 @@
+import type { MessageEntry, MessagePart } from "@motherbase/core";
+import type { ModelChunk } from "./model-client";
+
+const partTypeByDelta = {
+  "text-delta": "text",
+  "reasoning-delta": "reasoning",
+} as const;
+
+type DeltaChunk = Extract<ModelChunk, { type: keyof typeof partTypeByDelta }>;
+
+export class MessageDraft {
+  #parts: MessagePart[] = [];
+
+  push(delta: DeltaChunk): void {
+    const type = partTypeByDelta[delta.type];
+    const last = this.#parts.at(-1);
+    if (last?.type === type) {
+      last.text += delta.text;
+      return;
+    }
+    this.#parts.push({ type, text: delta.text });
+  }
+
+  complete(): MessageEntry {
+    return { kind: "message", role: "assistant", parts: this.#parts };
+  }
+}

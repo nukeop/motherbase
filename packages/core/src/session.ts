@@ -30,6 +30,10 @@ export class Session {
     return this.#history;
   }
 
+  append(entry: HistoryEntry): void {
+    this.#history.push(entry);
+  }
+
   snapshot(): SessionSnapshot {
     return sessionSnapshotSchema.parse({
       id: this.id,
