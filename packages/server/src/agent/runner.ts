@@ -38,6 +38,7 @@ export class Runner {
     }
     const reply = draft.complete();
     this.session.append(reply);
+    this.session.checkpoint(this.#state);
     this.deps.emit({ type: "message-completed", message: reply });
     this.deps.emit({ type: "turn-completed" });
   }

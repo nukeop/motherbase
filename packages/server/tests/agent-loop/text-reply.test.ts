@@ -1,10 +1,10 @@
 import { describe, expect, test } from "bun:test";
 import type { MessageEntry } from "@motherbase/core";
-import { createScenario } from "../helpers/scenario";
+import { Scenario } from "../helpers/scenario";
 
 describe("text reply turn", () => {
   test("a sent message streams back a text reply and the session returns to idle", async () => {
-    const scenario = createScenario();
+    const scenario = new Scenario();
 
     scenario.scriptTurn([
       { type: "text-delta", text: "Hi" },
@@ -42,7 +42,7 @@ describe("text reply turn", () => {
   });
 
   test("reasoning deltas stream before the text and the completed message keeps the reasoning part", async () => {
-    const scenario = createScenario();
+    const scenario = new Scenario();
 
     scenario.scriptTurn([
       { type: "reasoning-delta", text: "The user greeted me. " },

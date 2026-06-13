@@ -6,39 +6,29 @@ import {
 import { Runner } from "../../src/agent/runner";
 import { createMockModel } from "./mock-model";
 
-export type Scenario = {
-  scriptTurn: (chunks: ModelChunk[]) => void;
-  sendMessage: (text: string) => Promise<void>;
-  readonly session: Session;
-  readonly runner: Runner;
-  readonly events: readonly AgentEvent[];
-};
+export class Scenario {
+  readonly session = Session.create({ projectId: crypto.randomUUID() });
+  readonly events: AgentEvent[] = [];
+  #script!: ModelChunk[];
+  #runner!: Runner;
 
-export const createScenario = (): Scenario => {
-  const events: AgentEvent[] = [];
-  const session = Session.create({ projectId: crypto.randomUUID() });
-  let script: ModelChunk[];
-  let runner: Runner;
+  get runner(): Runner {
+    return this.#runner;
+  }
 
-  return {
-    scriptTurn: (chunks) => {
-      script = chunks;
-    },
-    sendMessage: async (text) => {
-      runner = new Runner(session, {
-        model: createModelClient(createMockModel(script)),
-        emit: (event) => events.push(event),
-      });
-      await runner.send({
-        kind: "message",
-        role: "user",
-        parts: [{ type: "text", text }],
-      });
-    },
-    session,
-    get runner() {
-      return runner;
-    },
-    events,
-  };
-};
+  scriptTurn(chunks: ModelChunk[]): void {
+    this.#script = chunks;
+  }
+
+  async sendMessage(text: string): Promise<void> {
+    this.#runner = new Runner(this.session, {
+      model: createModelClient(createMockModel(this.#script)),
+      emit: (event) => this.events.push(event),
+    });
+    await this.#runner.send({
+      kind: "message",
+      role: "user",
+      parts: [{ type: "text", text }],
+    });
+  }
+}
