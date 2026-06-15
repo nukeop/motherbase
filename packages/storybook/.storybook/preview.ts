@@ -1,4 +1,4 @@
-import "@motherbase/ui/src/index.css";
+import "@motherbase/ui/styles.css";
 
 import type { Preview } from "@storybook/react-vite";
 

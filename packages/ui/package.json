@@ -8,7 +8,8 @@
     ".": {
       "import": "./src/index.ts",
       "types": "./dist/index.d.ts"
-    }
+    },
+    "./styles.css": "./src/index.css"
   },
   "scripts": {
     "dev": "vite build --watch",
@@ -16,6 +17,7 @@
     "typecheck": "tsc --noEmit -p tsconfig.json"
   },
   "dependencies": {
+    "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
