@@ -28,7 +28,9 @@ export class Runner {
   async send(message: MessageEntry): Promise<void> {
     this.session.append(message);
     const draft = new MessageDraft();
-    const chunks = this.deps.model.stream(projectForModel(this.session.history));
+    const chunks = this.deps.model.stream(
+      projectForModel(this.session.history),
+    );
     for await (const chunk of chunks) {
       if (chunk.type === "finish") {
         continue;

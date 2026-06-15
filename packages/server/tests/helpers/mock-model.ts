@@ -7,7 +7,7 @@ type BlockKind = "text" | "reasoning";
 type CurrentBlock = {
   kind: BlockKind;
   id: string;
-}
+};
 
 const toStreamParts = (chunks: ModelChunk[]): LanguageModelV3StreamPart[] => {
   const parts: LanguageModelV3StreamPart[] = [];
@@ -29,10 +29,10 @@ const toStreamParts = (chunks: ModelChunk[]): LanguageModelV3StreamPart[] => {
       return openBlock;
     }
 
-    openBlock = { kind, id: crypto.randomUUID() }
-    parts.push({ type: `${kind}-start`, id: openBlock.id })
+    openBlock = { kind, id: crypto.randomUUID() };
+    parts.push({ type: `${kind}-start`, id: openBlock.id });
     return openBlock;
-  }
+  };
 
   chunks.forEach((chunk) => {
     switch (chunk.type) {
@@ -63,7 +63,7 @@ const toStreamParts = (chunks: ModelChunk[]): LanguageModelV3StreamPart[] => {
         });
         break;
     }
-  })
+  });
   return parts;
 };
 
