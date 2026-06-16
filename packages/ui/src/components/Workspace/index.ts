@@ -1,2 +1,1 @@
-export { AppShell } from "./AppShell";
 export { Workspace } from "./Workspace";

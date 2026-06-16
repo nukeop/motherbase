@@ -7,6 +7,7 @@ const clamp = (value: number, min: number, max: number) =>
   Math.min(max, Math.max(min, value));
 
 export const useSidebarResize = (
+  side: Side,
   width: number,
   onWidthChange: (width: number) => void,
 ) => {
@@ -25,7 +26,9 @@ export const useSidebarResize = (
       return;
     }
 
-    const delta = Math.abs(e.clientX - startRef.current.x)
+    const delta = side === "left"
+      ? e.clientX - startRef.current.x
+      : startRef.current.x - e.clientX;
 
     onWidthChange(clamp(startRef.current.width + delta, SIDEBAR.minWidth, SIDEBAR.maxWidth));
   };

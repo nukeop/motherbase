@@ -23,7 +23,7 @@ export const Sidebar: FC<SidebarProps> = ({
   onWidthChange,
   className,
 }) => {
-  const { isDragging, handleProps } = useSidebarResize(width, onWidthChange);
+  const { isDragging, handleProps } = useSidebarResize(side, width, onWidthChange);
   const currentWidth = isCollapsed ? SIDEBAR.collapsedWidth : width;
 
   return (
