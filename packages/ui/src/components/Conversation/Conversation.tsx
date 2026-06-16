@@ -6,7 +6,7 @@ type ConversationProps = {
 
 export const Conversation = ({ children }: ConversationProps) => {
   return (
-    <div className="flex flex-1 flex-col overflow-y-auto">
+    <div className="flex flex-1 flex-col gap-2 overflow-y-auto bg-cream-dark p-2">
       {children}
     </div>
   );
