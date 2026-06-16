@@ -3,9 +3,8 @@ import type { Transition } from "motion/react";
 export const transitions = {
   snappy: {
     type: "spring",
-    stiffness: 300,
-    damping: 30,
-    mass: 0.8,
+    duration: 0.25,
+    bounce: 0.3,
   },
   instant: {
     duration: 0,
