@@ -43,7 +43,7 @@ export const Workspace: FC<WorkspaceProps> = ({
           {leftSidebar.content}
         </AppShell.Sidebar>
       )}
-      <AppShell.Main className="bg-cream rounded-xl shadow-sm">
+      <AppShell.Main className="bg-cream rounded-lg border border-ink/15">
         {children}
       </AppShell.Main>
       {rightSidebar && (
