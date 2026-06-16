@@ -1,8 +1,30 @@
 @import "tailwindcss";
+@import "@fontsource-variable/jetbrains-mono";
+@import "@fontsource/chakra-petch/400.css";
+@import "@fontsource/chakra-petch/500.css";
+@import "@fontsource/chakra-petch/700.css";
 
 @source "./";
 
 @custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
+
+@font-face {
+  font-family: "Rodin";
+  font-weight: 300;
+  src: url("./fonts/rodin-l.otf") format("opentype");
+}
+
+@font-face {
+  font-family: "Rodin";
+  font-weight: 400;
+  src: url("./fonts/rodin-m.otf") format("opentype");
+}
+
+@font-face {
+  font-family: "Rodin";
+  font-weight: 700;
+  src: url("./fonts/rodin-b.otf") format("opentype");
+}
 
 @theme {
   --color-cream: oklch(0.977 0.009 84.59);
@@ -10,4 +32,8 @@
   --color-ink: oklch(0.25 0.005 84.59);
   --color-blue: oklch(0.627 0.146 252.21);
   --color-orange: oklch(0.747 0.144 58.58);
+
+  --font-body: "Rodin", sans-serif;
+  --font-nav: "Chakra Petch", sans-serif;
+  --font-mono: "JetBrains Mono Variable", monospace;
 }
