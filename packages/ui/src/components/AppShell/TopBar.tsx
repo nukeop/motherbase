@@ -7,7 +7,5 @@ type TopBarProps = {
 };
 
 export const TopBar: FC<TopBarProps> = ({ children, className }) => (
-  <header className={cn("flex-none", className)}>
-    {children}
-  </header>
+  <header className={cn("flex-none", className)}>{children}</header>
 );

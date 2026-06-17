@@ -23,7 +23,11 @@ export const Sidebar: FC<SidebarProps> = ({
   onWidthChange,
   className,
 }) => {
-  const { isDragging, handleProps } = useSidebarResize(side, width, onWidthChange);
+  const { isDragging, handleProps } = useSidebarResize(
+    side,
+    width,
+    onWidthChange,
+  );
   const currentWidth = isCollapsed ? SIDEBAR.collapsedWidth : width;
 
   return (
@@ -33,19 +37,14 @@ export const Sidebar: FC<SidebarProps> = ({
       animate={{ width: currentWidth }}
       transition={isDragging ? transitions.instant : transitions.snappy}
     >
-      <div className="flex flex-1 flex-col overflow-hidden">
-        {children}
-      </div>
+      <div className="flex flex-1 flex-col overflow-hidden">{children}</div>
 
       {!isCollapsed && (
         <div
-          className={cn(
-            "absolute top-0 bottom-0 w-1 cursor-col-resize",
-            {
-              "right-0": side === "left",
-              "left-0": side === "right",
-            },
-          )}
+          className={cn("absolute top-0 bottom-0 w-1 cursor-col-resize", {
+            "right-0": side === "left",
+            "left-0": side === "right",
+          })}
           {...handleProps}
         />
       )}

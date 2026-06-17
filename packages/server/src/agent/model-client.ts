@@ -1,5 +1,8 @@
+import { getLogger } from "@logtape/logtape";
 import type { MessageEntry } from "@motherbase/core";
 import { type LanguageModel, type ModelMessage, streamText } from "ai";
+
+const logger = getLogger(["Motherbase", "Agent", "ModelClient"]);
 
 export type FinishReason = "stop";
 

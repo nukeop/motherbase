@@ -1,2 +1,3 @@
-// @motherbase/server: local bun daemon entry point.
-export {};
+import { initLogger } from "./logger";
+
+await initLogger();

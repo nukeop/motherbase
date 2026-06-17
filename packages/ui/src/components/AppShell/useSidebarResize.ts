@@ -26,11 +26,14 @@ export const useSidebarResize = (
       return;
     }
 
-    const delta = side === "left"
-      ? e.clientX - startRef.current.x
-      : startRef.current.x - e.clientX;
+    const delta =
+      side === "left"
+        ? e.clientX - startRef.current.x
+        : startRef.current.x - e.clientX;
 
-    onWidthChange(clamp(startRef.current.width + delta, SIDEBAR.minWidth, SIDEBAR.maxWidth));
+    onWidthChange(
+      clamp(startRef.current.width + delta, SIDEBAR.minWidth, SIDEBAR.maxWidth),
+    );
   };
 
   const onPointerUp = () => {

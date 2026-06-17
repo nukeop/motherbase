@@ -7,7 +7,9 @@ type AppShellProps = {
 };
 
 export const AppShellRoot: FC<AppShellProps> = ({ children, className }) => (
-  <div className={cn("flex h-screen w-screen flex-col overflow-hidden", className)}>
+  <div
+    className={cn("flex h-screen w-screen flex-col overflow-hidden", className)}
+  >
     {children}
   </div>
 );

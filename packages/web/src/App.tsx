@@ -17,7 +17,9 @@ export function App() {
 
   return (
     <Workspace
-      topBar={<span className="font-bold tracking-wide text-ink/80">MOTHERBASE</span>}
+      topBar={
+        <span className="font-bold tracking-wide text-ink/80">MOTHERBASE</span>
+      }
       leftSidebar={{
         content: null,
         isCollapsed: leftCollapsed,

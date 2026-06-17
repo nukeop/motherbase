@@ -9,14 +9,44 @@ export default meta;
 type Story = StoryObj;
 
 const colors = [
-  { name: "cream", token: "bg-cream", oklch: "oklch(0.977 0.009 84.59)", hex: "#FAF7F1", desc: "Main surface" },
-  { name: "cream-dark", token: "bg-cream-dark", oklch: "oklch(0.935 0.012 84.59)", hex: "#EDE9E1", desc: "Recessed surface" },
-  { name: "ink", token: "bg-ink", oklch: "oklch(0.25 0.005 84.59)", hex: "#23211F", desc: "Text" },
-  { name: "blue", token: "bg-blue", oklch: "oklch(0.627 0.146 252.21)", hex: "#3D8BDD", desc: "Primary accent" },
-  { name: "orange", token: "bg-orange", oklch: "oklch(0.747 0.144 58.58)", hex: "#EF9445", desc: "Secondary accent" },
+  {
+    name: "cream",
+    token: "bg-cream",
+    oklch: "oklch(0.977 0.009 84.59)",
+    hex: "#FAF7F1",
+    desc: "Main surface",
+  },
+  {
+    name: "cream-dark",
+    token: "bg-cream-dark",
+    oklch: "oklch(0.935 0.012 84.59)",
+    hex: "#EDE9E1",
+    desc: "Recessed surface",
+  },
+  {
+    name: "ink",
+    token: "bg-ink",
+    oklch: "oklch(0.25 0.005 84.59)",
+    hex: "#23211F",
+    desc: "Text",
+  },
+  {
+    name: "blue",
+    token: "bg-blue",
+    oklch: "oklch(0.627 0.146 252.21)",
+    hex: "#3D8BDD",
+    desc: "Primary accent",
+  },
+  {
+    name: "orange",
+    token: "bg-orange",
+    oklch: "oklch(0.747 0.144 58.58)",
+    hex: "#EF9445",
+    desc: "Secondary accent",
+  },
 ];
 
-const Swatch = ({ color }: { color: typeof colors[number] }) => (
+const Swatch = ({ color }: { color: (typeof colors)[number] }) => (
   <div className="flex items-center gap-4">
     <div
       className={`${color.token} h-16 w-16 rounded-lg border border-ink/10`}

@@ -8,7 +8,8 @@ const meta: Meta = {
 export default meta;
 type Story = StoryObj;
 
-const sample = "That's an enemy gunship. A single burst from its machine gun can cut a man in half.";
+const sample =
+  "That's an enemy gunship. A single burst from its machine gun can cut a man in half.";
 
 const FontStack = ({
   name,
@@ -31,7 +32,9 @@ const FontStack = ({
       {weights.map(({ label, className }) => (
         <div key={label} className="flex items-baseline gap-4">
           <span className="w-20 shrink-0 text-xs text-ink/40">{label}</span>
-          <span className={`${token} ${className} text-2xl text-ink`}>{sample}</span>
+          <span className={`${token} ${className} text-2xl text-ink`}>
+            {sample}
+          </span>
         </div>
       ))}
     </div>

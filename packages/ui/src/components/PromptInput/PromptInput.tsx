@@ -1,8 +1,6 @@
 export const PromptInput = () => {
   return (
-    <div
-      className="bg-ink flex"
-    >
+    <div className="bg-ink flex">
       <textarea
         rows={1}
         placeholder="Send a message..."

@@ -1,3 +1,4 @@
+import { getLogger } from "@logtape/logtape";
 import {
   type AgentEvent,
   type MachineState,
@@ -7,6 +8,8 @@ import {
 } from "@motherbase/core";
 import { MessageDraft } from "./message-draft";
 import type { ModelClient } from "./model-client";
+
+const logger = getLogger(["Motherbase", "Agent", "Runner"]);
 
 export type Deps = {
   model: ModelClient;

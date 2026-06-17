@@ -1,5 +1,8 @@
+import { getLogger } from "@logtape/logtape";
 import type { MessageEntry, MessagePart } from "@motherbase/core";
 import type { ModelChunk } from "./model-client";
+
+const logger = getLogger(["Motherbase", "Agent", "MessageDraft"]);
 
 const partTypeByDelta = {
   "text-delta": "text",
