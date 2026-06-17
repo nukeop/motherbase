@@ -4,7 +4,7 @@ import type { LanguageModel } from "ai";
 export type Provider = {
   id: string;
   name: string;
-  connect: () => Promise<void>;
+  setCredential: (apiKey: string) => Promise<void>;
   listModels: () => Promise<ModelInfo[]>;
   createModel: (modelId: string) => Promise<LanguageModel>;
 };
