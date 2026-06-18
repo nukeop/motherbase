@@ -5,6 +5,8 @@ const providers: Record<string, Provider> = {
   openrouter,
 };
 
+export const allProviders = (): Provider[] => Object.values(providers);
+
 export const getProvider = (id: string): Provider => {
   const provider = providers[id];
   if (!provider) {

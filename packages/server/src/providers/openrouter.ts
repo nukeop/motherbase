@@ -46,6 +46,13 @@ export const setCredential = async (apiKey: string) => {
   });
 };
 
+export const removeCredential = async () => {
+  await Bun.secrets.delete({
+    service: SERVICE,
+    name: SECRET_NAME,
+  });
+};
+
 const getApiKey = async (): Promise<string> => {
   const key = await Bun.secrets.get({
     service: SERVICE,
@@ -76,6 +83,7 @@ export const openrouter: Provider = {
   id: "openrouter",
   name: "OpenRouter",
   setCredential,
+  removeCredential,
   listModels,
   createModel,
 };

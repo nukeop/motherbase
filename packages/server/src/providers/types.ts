@@ -5,6 +5,7 @@ export type Provider = {
   id: string;
   name: string;
   setCredential: (apiKey: string) => Promise<void>;
+  removeCredential: () => Promise<void>;
   listModels: () => Promise<ModelInfo[]>;
   createModel: (modelId: string) => Promise<LanguageModel>;
 };
