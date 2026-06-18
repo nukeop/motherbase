@@ -31,6 +31,20 @@ const colors = [
     desc: "Text",
   },
   {
+    name: "steel",
+    token: "bg-steel",
+    oklch: "oklch(0.35 0.008 260)",
+    hex: "#3E4249",
+    desc: "Metal surface (light)",
+  },
+  {
+    name: "gunmetal",
+    token: "bg-gunmetal",
+    oklch: "oklch(0.30 0.006 260)",
+    hex: "#31343A",
+    desc: "Metal surface (dark)",
+  },
+  {
     name: "blue",
     token: "bg-blue",
     oklch: "oklch(0.627 0.146 252.21)",

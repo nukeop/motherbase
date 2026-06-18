@@ -2,6 +2,7 @@ import {
   AssistantMessage,
   Conversation,
   PromptInput,
+  type SelectItem,
   UserMessage,
   Workspace,
 } from "@motherbase/ui";
@@ -9,11 +10,16 @@ import { useState } from "react";
 
 const INITIAL_WIDTH = 260;
 
+const providers: SelectItem[] = [];
+const models: SelectItem[] = [];
+
 export function App() {
   const [leftCollapsed, setLeftCollapsed] = useState(false);
   const [rightCollapsed, setRightCollapsed] = useState(true);
   const [leftWidth, setLeftWidth] = useState(INITIAL_WIDTH);
   const [rightWidth, setRightWidth] = useState(INITIAL_WIDTH);
+  const [provider, setProvider] = useState("");
+  const [model, setModel] = useState("");
 
   return (
     <Workspace
@@ -43,7 +49,14 @@ export function App() {
           <AssistantMessage text="Huh... hey! That was 100% all-beef patty and no shortening in the bun, either." />
           <UserMessage text="Hm. Nature's blessings... unadulterated... in hamburger form. Is that it? But when taste falls short, so does our gratitude to Nature. Making such precious blessings unpalatable is sacrilege." />
         </Conversation>
-        <PromptInput />
+        <PromptInput
+          providers={providers}
+          models={models}
+          selectedProvider={provider}
+          selectedModel={model}
+          onProviderChange={setProvider}
+          onModelChange={setModel}
+        />
       </div>
     </Workspace>
   );
