@@ -39,3 +39,27 @@
   --font-nav: "Chakra Petch", sans-serif;
   --font-mono: "JetBrains Mono Variable", monospace;
 }
+
+@layer base {
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: oklch(0.35 0.008 260) transparent;
+  }
+
+  *::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  *::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  *::-webkit-scrollbar-thumb {
+    background: oklch(0.35 0.008 260);
+    border-radius: 0;
+  }
+
+  *::-webkit-scrollbar-thumb:hover {
+    background: oklch(0.45 0.008 260);
+  }
+}

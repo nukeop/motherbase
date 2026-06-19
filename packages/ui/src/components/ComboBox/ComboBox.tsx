@@ -9,30 +9,31 @@ import type { ReactNode } from "react";
 import { cn } from "../../utils";
 import { useComboBox } from "./useComboBox";
 
-export type ComboBoxItem<T extends string = string> = {
+export type ComboBoxItem<T extends string = string, D = undefined> = {
   label: string;
   value: T;
+  data?: D;
 };
 
-type ComboBoxProps<T extends string = string> = {
+type ComboBoxProps<T extends string = string, D = undefined> = {
   value: T;
   onChange: (value: T) => void;
-  options: ComboBoxItem<T>[];
+  options: ComboBoxItem<T, D>[];
   placeholder?: string;
   renderOption?: (
-    item: ComboBoxItem<T>,
+    item: ComboBoxItem<T, D>,
     active: boolean,
     selected: boolean,
   ) => ReactNode;
 };
 
-export const ComboBox = <T extends string = string>({
+export const ComboBox = <T extends string = string, D = undefined>({
   value,
   onChange,
   options,
   placeholder = "Search...",
   renderOption,
-}: ComboBoxProps<T>) => {
+}: ComboBoxProps<T, D>) => {
   const { setQuery, filtered, selected, refs, floatingStyles } = useComboBox(
     options,
     value,

@@ -1,8 +1,11 @@
+import type { ComboBoxItem } from "../ComboBox";
+import { ComboBox } from "../ComboBox";
 import { Select, type SelectItem } from "../Select";
+import { type ModelData, ModelOption } from "./ModelOption";
 
 type PromptInputProps = {
   providers: SelectItem[];
-  models: SelectItem[];
+  models: ComboBoxItem<string, ModelData>[];
   selectedProvider: string;
   selectedModel: string;
   onProviderChange: (value: string) => void;
@@ -31,10 +34,12 @@ export const PromptInput = ({
           options={providers}
         />
         <div className="h-3 w-px bg-cream/10" />
-        <Select
+        <ComboBox
           value={selectedModel}
           onChange={onModelChange}
           options={models}
+          placeholder="Search models..."
+          renderOption={(item) => <ModelOption item={item} />}
         />
       </div>
     </div>

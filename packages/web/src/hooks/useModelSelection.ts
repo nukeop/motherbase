@@ -1,4 +1,4 @@
-import type { SelectItem } from "@motherbase/ui";
+import type { ComboBoxItem, ModelData, SelectItem } from "@motherbase/ui";
 import { useModels } from "./useModels";
 import { useProviders } from "./useProviders";
 import { useServerState, useSetModel, useSetProvider } from "./useServerState";
@@ -12,9 +12,21 @@ export const useModelSelection = () => {
   const { mutate: setProvider } = useSetProvider();
   const { mutate: setModel } = useSetModel();
 
+  const models: ComboBoxItem<string, ModelData>[] = (
+    useModels(state?.provider ?? "").data ?? []
+  ).map((model) => ({
+    label: model.name,
+    value: model.id,
+    data: {
+      inputPrice: model.pricing.input,
+      outputPrice: model.pricing.output,
+      contextLength: model.contextLength,
+    },
+  }));
+
   return {
     providers: toSelectItems(useProviders().data ?? []),
-    models: toSelectItems(useModels(state?.provider ?? "").data ?? []),
+    models,
     selectedProvider: state?.provider ?? "",
     selectedModel: state?.model ?? "",
     onProviderChange: setProvider,
