@@ -1,7 +1,4 @@
-import {
-  PromptInput,
-  Workspace,
-} from "@motherbase/ui";
+import { PromptInput, Workspace } from "@motherbase/ui";
 import { useLayout } from "./hooks/useLayout";
 import { useModelSelection } from "./hooks/useModelSelection";
 

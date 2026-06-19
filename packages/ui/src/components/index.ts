@@ -1,5 +1,6 @@
 export { AppShell } from "./AppShell";
 export { AssistantMessage } from "./AssistantMessage";
+export { ComboBox, type ComboBoxItem } from "./ComboBox";
 export { Conversation } from "./Conversation";
 export { PromptInput } from "./PromptInput";
 export { Select, type SelectItem } from "./Select";
