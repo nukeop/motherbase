@@ -7,7 +7,7 @@
   ],
   "scripts": {
     "cli": "bun run packages/server/src/index.ts",
-    "dev": "bun --filter @motherbase/web dev",
+    "dev": "bun run packages/server/src/index.ts & bun --filter @motherbase/web dev",
     "storybook": "bun --filter @motherbase/storybook dev",
     "format": "biome format --write",
     "lint": "biome check --write",

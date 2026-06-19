@@ -2,6 +2,9 @@
   "name": "@motherbase/server",
   "private": true,
   "type": "module",
+  "exports": {
+    "./api": "./src/api/index.ts"
+  },
   "scripts": {
     "typecheck": "tsc --noEmit -p tsconfig.json"
   },

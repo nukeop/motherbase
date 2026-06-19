@@ -10,8 +10,11 @@
   },
   "dependencies": {
     "@motherbase/core": "workspace:*",
+    "@motherbase/server": "workspace:*",
     "@motherbase/ui": "workspace:*",
+    "@tanstack/react-query": "^5.101.0",
     "clsx": "^2.1.1",
+    "hono": "^4.12.25",
     "react": "^19.2.7",
     "react-dom": "^19.2.7"
   },
