@@ -1,4 +1,5 @@
 import { PromptInput, Workspace } from "@motherbase/ui";
+import { TopBar } from "./components/TopBar";
 import { useLayout } from "./hooks/useLayout";
 import { useModelSelection } from "./hooks/useModelSelection";
 
@@ -8,9 +9,7 @@ export function App() {
 
   return (
     <Workspace
-      topBar={
-        <span className="font-bold tracking-wide text-ink/80">MOTHERBASE</span>
-      }
+      topBar={<TopBar />}
       leftSidebar={layout.leftSidebar}
       rightSidebar={layout.rightSidebar}
     >

@@ -34,6 +34,8 @@
   --color-gunmetal: oklch(0.3 0.006 260);
   --color-blue: oklch(0.627 0.146 252.21);
   --color-orange: oklch(0.747 0.144 58.58);
+  --color-green: oklch(0.687 0.145 155);
+  --color-red: oklch(0.687 0.145 25);
 
   --font-body: "Rodin", sans-serif;
   --font-nav: "Chakra Petch", sans-serif;

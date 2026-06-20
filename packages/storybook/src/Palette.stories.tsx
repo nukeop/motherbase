@@ -58,6 +58,20 @@ const colors = [
     hex: "#EF9445",
     desc: "Secondary accent",
   },
+  {
+    name: "green",
+    token: "bg-green",
+    oklch: "oklch(0.687 0.145 155)",
+    hex: "#3CB472",
+    desc: "Status: nominal",
+  },
+  {
+    name: "red",
+    token: "bg-red",
+    oklch: "oklch(0.687 0.145 25)",
+    hex: "#E6726C",
+    desc: "Status: error",
+  },
 ];
 
 const Swatch = ({ color }: { color: (typeof colors)[number] }) => (
