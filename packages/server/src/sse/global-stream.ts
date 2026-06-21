@@ -9,11 +9,15 @@ export class GlobalStream {
   #teardowns: (() => void)[] = [];
   readonly done: Promise<void>;
 
-  constructor(stream: SSEStreamingApi) {
+  constructor(stream: SSEStreamingApi, sources: StreamSource[]) {
     this.#stream = stream;
 
     logger.info("SSE client connected");
     this.write("connected", { timestamp: new Date().toISOString() });
+
+    for (const source of sources) {
+      this.attach(source);
+    }
 
     this.done = new Promise((resolve) => {
       stream.onAbort(() => {

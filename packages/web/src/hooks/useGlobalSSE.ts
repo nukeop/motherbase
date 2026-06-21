@@ -1,30 +1,8 @@
-import { useEffect, useState } from "react";
 import { BASE_URL } from "../api/client";
+import { useConnectionStatus } from "./useConnectionStatus";
 
-export type ConnectionStatus = "connecting" | "connected" | "disconnected";
-
-export function useGlobalSSE() {
-  const [status, setStatus] = useState<ConnectionStatus>("connecting");
-
-  useEffect(() => {
-    const source = new EventSource(`${BASE_URL}/events`);
-
-    source.onopen = () => {
-      setStatus("connected");
-    };
-
-    source.onerror = () => {
-      setStatus("disconnected");
-    };
-
-    source.addEventListener("connected", () => {
-      setStatus("connected");
-    });
-
-    return () => {
-      source.close();
-    };
-  }, []);
+export const useGlobalSSE = () => {
+  const status = useConnectionStatus(`${BASE_URL}/events`, 15_000);
 
   return { status };
-}
+};
