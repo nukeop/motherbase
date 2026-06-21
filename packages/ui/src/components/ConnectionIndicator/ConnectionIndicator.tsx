@@ -1,6 +1,6 @@
 import { cn } from "../../utils";
 
-type ConnectionStatus = "connecting" | "connected" | "disconnected";
+export type ConnectionStatus = "connecting" | "connected" | "disconnected";
 
 export const ConnectionIndicator = ({
   status,

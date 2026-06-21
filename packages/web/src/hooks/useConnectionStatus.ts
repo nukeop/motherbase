@@ -1,6 +1,5 @@
+import type { ConnectionStatus } from "@motherbase/ui";
 import { useEffect, useRef, useState } from "react";
-
-export type ConnectionStatus = "connecting" | "connected" | "disconnected";
 
 export const useConnectionStatus = (
   url: string,
