@@ -39,6 +39,7 @@ export const Workspace: FC<WorkspaceProps> = ({
           width={leftSidebar.width}
           onWidthChange={leftSidebar.onWidthChange}
           onToggle={leftSidebar.onToggle}
+          className="bg-ink"
         >
           {leftSidebar.content}
         </AppShell.Sidebar>
