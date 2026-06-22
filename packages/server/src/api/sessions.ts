@@ -7,6 +7,7 @@ export const sessionsApi = new Hono()
       .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
       .map((session) => ({
         id: session.id,
+        title: session.title,
         projectId: session.projectId,
         createdAt: session.createdAt.toISOString(),
         messageCount: session.history.length,
@@ -23,6 +24,7 @@ export const sessionsApi = new Hono()
 
     return ctx.json({
       id: session.id,
+      title: session.title,
       projectId: session.projectId,
       createdAt: session.createdAt.toISOString(),
       history: session.history,

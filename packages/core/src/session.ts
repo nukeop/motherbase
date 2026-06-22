@@ -1,5 +1,6 @@
 import type { HistoryEntry } from "./history";
 
+
 export class Session {
   #history: HistoryEntry[];
 
@@ -9,12 +10,13 @@ export class Session {
     readonly parentSessionId: string | null,
     history: HistoryEntry[],
     readonly createdAt: Date,
+    public title: string,
   ) {
     this.#history = history;
   }
 
   static create(input: { projectId: string }): Session {
-    return new Session(crypto.randomUUID(), input.projectId, null, [], new Date());
+    return new Session(crypto.randomUUID(), input.projectId, null, [], new Date(), "New session");
   }
 
   get history(): readonly HistoryEntry[] {
