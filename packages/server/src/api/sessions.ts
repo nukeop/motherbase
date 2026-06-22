@@ -1,7 +1,18 @@
 import { Hono } from "hono";
-import { getSession, listSessions } from "../sessions/store";
+import { createSession, getSession, listSessions } from "../sessions/store";
+
+const DEFAULT_PROJECT_ID = "default";
 
 export const sessionsApi = new Hono()
+  .post("/", (ctx) => {
+    const session = createSession(DEFAULT_PROJECT_ID);
+    return ctx.json({
+      id: session.id,
+      title: session.title,
+      projectId: session.projectId,
+      createdAt: session.createdAt.toISOString(),
+    }, 201);
+  })
   .get("/", (ctx) => {
     const sessions = listSessions()
       .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
