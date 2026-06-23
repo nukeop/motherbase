@@ -2,9 +2,9 @@ import { getLogger } from "@logtape/logtape";
 import type { SSEStreamingApi } from "hono/streaming";
 import type { StreamSource } from "./types";
 
-const logger = getLogger(["Motherbase", "SSE", "Global"]);
+const logger = getLogger(["Motherbase", "SSE", "EventStream"]);
 
-export class GlobalStream {
+export class EventStream {
   #stream: SSEStreamingApi;
   #teardowns: (() => void)[] = [];
   readonly done: Promise<void>;
