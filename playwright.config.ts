@@ -17,6 +17,7 @@ export default defineConfig({
       command: "bun run packages/server/src/index.ts",
       port: 4800,
       reuseExistingServer: !process.env.CI,
+      env: { NODE_ENV: "test" },
     },
     {
       command: "bun --filter @motherbase/web dev",
