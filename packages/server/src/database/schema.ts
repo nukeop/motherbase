@@ -1,3 +1,4 @@
+import type { InferSelectModel } from "drizzle-orm";
 import { integer, sqliteTable, text, uniqueIndex } from "drizzle-orm/sqlite-core";
 
 export const session = sqliteTable("session", {
@@ -9,6 +10,8 @@ export const session = sqliteTable("session", {
   modelId: text("model_id").notNull(),
   createdAt: integer("created_at").notNull(),
 });
+
+export type SessionRow = InferSelectModel<typeof session>;
 
 export const message = sqliteTable(
   "message",
