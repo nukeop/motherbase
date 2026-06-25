@@ -1,6 +1,7 @@
 import { zValidator } from "@hono/zod-validator";
 import type { MessageEntry } from "@motherbase/core";
 import { Hono } from "hono";
+import { streamSSE } from "hono/streaming";
 import { z } from "zod";
 import { createModelClient } from "../agent/model-client";
 import { Runner } from "../agent/runner";
@@ -10,7 +11,8 @@ import {
   getMessages,
   listSessions,
 } from "../sessions/store";
-import { emitToSession } from "../sse/sources/session";
+import { EventStream } from "../sse/event-stream";
+import { emitToSession, sessionSource } from "../sse/sources/session";
 import { requireSession } from "./middleware";
 import { getCurrentState } from "./state";
 
@@ -68,4 +70,11 @@ export const sessionsApi = new Hono()
 
       return ctx.json(userMessage);
     },
-  );
+  )
+  .get("/:id/events", requireSession, (ctx) => {
+    const session = ctx.var.session;
+
+    return streamSSE(ctx, (stream) =>
+      new EventStream(stream, [sessionSource(session.id)]).done,
+    );
+  });
