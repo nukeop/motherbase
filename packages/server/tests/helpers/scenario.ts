@@ -1,11 +1,16 @@
-import { type AgentEvent, Session } from "@motherbase/core";
+import type { AgentEvent } from "@motherbase/core";
 import type { ModelChunk } from "../../src/agent/model-chunk";
 import { createModelClient } from "../../src/agent/model-client";
 import { Runner } from "../../src/agent/runner";
+import { createSession, getMessages } from "../../src/sessions/store";
 import { createMockModel } from "./mock-model";
 
 export class Scenario {
-  readonly session = Session.create({ projectId: crypto.randomUUID() });
+  readonly session = createSession({
+    projectId: crypto.randomUUID(),
+    providerId: "test",
+    modelId: "test-model",
+  });
   readonly events: AgentEvent[] = [];
   #script!: ModelChunk[];
   #runner!: Runner;
@@ -14,12 +19,16 @@ export class Scenario {
     return this.#runner;
   }
 
+  get messages() {
+    return getMessages(this.session.id);
+  }
+
   scriptTurn(chunks: ModelChunk[]): void {
     this.#script = chunks;
   }
 
   async sendMessage(text: string): Promise<void> {
-    this.#runner = new Runner(this.session, {
+    this.#runner = new Runner(this.session.id, {
       model: createModelClient(createMockModel(this.#script)),
       emit: (event) => this.events.push(event),
     });

@@ -4,8 +4,8 @@ import {
   type MachineState,
   type MessageEntry,
   projectForModel,
-  type Session,
 } from "@motherbase/core";
+import { appendMessage, getMessages } from "../sessions/store";
 import { MessageDraft } from "./message-draft";
 import type { ModelClient } from "./model-client";
 
@@ -20,7 +20,7 @@ export class Runner {
   #state: MachineState = { type: "idle" };
 
   constructor(
-    private readonly session: Session,
+    private readonly sessionId: string,
     private readonly deps: Deps,
   ) {}
 
@@ -29,11 +29,10 @@ export class Runner {
   }
 
   async send(message: MessageEntry): Promise<void> {
-    this.session.append(message);
+    appendMessage(this.sessionId, message);
     const draft = new MessageDraft();
-    const chunks = this.deps.model.stream(
-      projectForModel(this.session.history),
-    );
+    const history = getMessages(this.sessionId);
+    const chunks = this.deps.model.stream(projectForModel(history));
     for await (const chunk of chunks) {
       if (chunk.type === "finish") {
         continue;
@@ -42,7 +41,7 @@ export class Runner {
       draft.push(chunk);
     }
     const reply = draft.complete();
-    this.session.append(reply);
+    appendMessage(this.sessionId, reply);
     this.deps.emit({ type: "message-completed", message: reply });
     this.deps.emit({ type: "turn-completed" });
   }
