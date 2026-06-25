@@ -1,6 +1,6 @@
 import { getLogger } from "@logtape/logtape";
 import type { MessageEntry, MessagePart } from "@motherbase/core";
-import type { ModelChunk } from "./model-client";
+import type { ModelChunk } from "./model-chunk";
 
 const logger = getLogger(["Motherbase", "Agent", "MessageDraft"]);
 

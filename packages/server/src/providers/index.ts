@@ -15,6 +15,10 @@ export const getProvider = (id: string): Provider => {
   return provider;
 };
 
+export const registerProvider = (provider: Provider): void => {
+  providers[provider.id] = provider;
+};
+
 export type { ModelInfo, ModelPricing } from "@motherbase/core";
 export { readConfig } from "./config";
 export type { Provider } from "./types";

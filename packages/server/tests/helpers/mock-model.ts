@@ -1,7 +1,7 @@
 import type { LanguageModelV3StreamPart } from "@ai-sdk/provider";
 import { simulateReadableStream } from "ai";
 import { MockLanguageModelV3 } from "ai/test";
-import type { ModelChunk } from "../../src/agent/model-client";
+import type { ModelChunk } from "../../src/agent/model-chunk";
 
 type BlockKind = "text" | "reasoning";
 type CurrentBlock = {

@@ -1,15 +1,9 @@
 import { getLogger } from "@logtape/logtape";
 import type { MessageEntry } from "@motherbase/core";
 import { type LanguageModel, type ModelMessage, streamText } from "ai";
+import type { FinishReason, ModelChunk } from "./model-chunk";
 
 const logger = getLogger(["Motherbase", "Agent", "ModelClient"]);
-
-export type FinishReason = "stop";
-
-export type ModelChunk =
-  | { type: "text-delta"; text: string }
-  | { type: "reasoning-delta"; text: string }
-  | { type: "finish"; reason: FinishReason };
 
 export type ModelClient = {
   stream: (messages: readonly MessageEntry[]) => AsyncIterable<ModelChunk>;

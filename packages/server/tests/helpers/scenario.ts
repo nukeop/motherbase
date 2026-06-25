@@ -1,8 +1,6 @@
 import { type AgentEvent, Session } from "@motherbase/core";
-import {
-  createModelClient,
-  type ModelChunk,
-} from "../../src/agent/model-client";
+import type { ModelChunk } from "../../src/agent/model-chunk";
+import { createModelClient } from "../../src/agent/model-client";
 import { Runner } from "../../src/agent/runner";
 import { createMockModel } from "./mock-model";
 
