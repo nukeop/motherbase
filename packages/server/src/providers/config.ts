@@ -1,15 +1,17 @@
 import { z } from "zod";
 
+import { configPath } from "../paths";
+
 const configSchema = z.object({
   provider: z.string(),
+  model: z.string(),
 });
 
 export type Config = z.infer<typeof configSchema>;
 
-import { configPath } from "../paths";
-
 const defaultConfig: Config = {
   provider: "",
+  model: "",
 };
 
 export const readConfig = async (): Promise<Config> => {
