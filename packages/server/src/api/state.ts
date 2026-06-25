@@ -10,7 +10,13 @@ const loadDefaults = async () => {
   if (!currentProvider) {
     const config = await readConfig();
     currentProvider = config.provider;
+    currentModel = config.model;
   }
+};
+
+export const getCurrentState = async () => {
+  await loadDefaults();
+  return { provider: currentProvider, model: currentModel };
 };
 
 export const stateApi = new Hono()
