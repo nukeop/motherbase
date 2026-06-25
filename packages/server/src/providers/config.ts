@@ -6,9 +6,7 @@ const configSchema = z.object({
 
 export type Config = z.infer<typeof configSchema>;
 
-const configDir = process.env.XDG_CONFIG_HOME ?? `${process.env.HOME}/.config`;
-
-export const configPath = `${configDir}/motherbase/config.json`;
+import { configPath } from "../paths";
 
 const defaultConfig: Config = {
   provider: "",
