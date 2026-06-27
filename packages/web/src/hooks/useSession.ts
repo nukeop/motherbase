@@ -5,28 +5,6 @@ import { BASE_URL, client } from "../api/client";
 
 const sessionKey = (sessionId: string) => ["session", sessionId];
 
-const deltaToPartType = {
-  "text-delta": "text",
-  "reasoning-delta": "reasoning",
-} as const;
-
-type DeltaType = keyof typeof deltaToPartType;
-
-const appendDelta = (
-  parts: MessagePart[],
-  deltaType: DeltaType,
-  text: string,
-): MessagePart[] => {
-  const type = deltaToPartType[deltaType];
-  const last = parts.at(-1);
-
-  if (last?.type === type) {
-    return [...parts.slice(0, -1), { type, text: last.text + text }];
-  }
-
-  return [...parts, { type, text }];
-};
-
 export const useSession = (sessionId: string) => {
   const queryClient = useQueryClient();
   const [streamingParts, setStreamingParts] = useState<MessagePart[] | null>(
@@ -59,13 +37,10 @@ export const useSession = (sessionId: string) => {
   useEffect(() => {
     const source = new EventSource(`${BASE_URL}/sessions/${sessionId}/events`);
 
-    const handleDelta = (deltaType: DeltaType) => (event: MessageEvent) => {
-      const { text } = JSON.parse(event.data);
-      setStreamingParts((prev) => appendDelta(prev ?? [], deltaType, text));
-    };
-
-    source.addEventListener("text-delta", handleDelta("text-delta"));
-    source.addEventListener("reasoning-delta", handleDelta("reasoning-delta"));
+    source.addEventListener("message-in-progress", (event) => {
+      const { parts } = JSON.parse(event.data);
+      setStreamingParts(parts);
+    });
 
     source.addEventListener("turn-completed", () => {
       setStreamingParts(null);
