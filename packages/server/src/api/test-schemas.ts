@@ -10,4 +10,5 @@ export const testProviderSchema = z.object({
 
 export const testScriptSchema = z.object({
   chunks: z.array(modelChunkSchema),
+  error: z.string().optional(),
 });

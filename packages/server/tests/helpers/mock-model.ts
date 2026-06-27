@@ -9,7 +9,9 @@ type CurrentBlock = {
   id: string;
 };
 
-const toStreamParts = (chunks: ModelChunk[]): LanguageModelV3StreamPart[] => {
+export const toStreamParts = (
+  chunks: ModelChunk[],
+): LanguageModelV3StreamPart[] => {
   const parts: LanguageModelV3StreamPart[] = [];
   let openBlock: CurrentBlock | null = null;
 
@@ -67,9 +69,26 @@ const toStreamParts = (chunks: ModelChunk[]): LanguageModelV3StreamPart[] => {
   return parts;
 };
 
-export const createMockModel = (chunks: ModelChunk[]) =>
+export const createStream = (
+  parts: LanguageModelV3StreamPart[],
+  error?: Error,
+) =>
+  new ReadableStream<LanguageModelV3StreamPart>({
+    start(controller) {
+      for (const part of parts) {
+        controller.enqueue(part);
+      }
+      if (error) {
+        controller.error(error);
+      } else {
+        controller.close();
+      }
+    },
+  });
+
+export const createMockModel = (
+  stream: ReadableStream<LanguageModelV3StreamPart>,
+) =>
   new MockLanguageModelV3({
-    doStream: async () => ({
-      stream: simulateReadableStream({ chunks: toStreamParts(chunks) }),
-    }),
+    doStream: async () => ({ stream }),
   });

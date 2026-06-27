@@ -1,12 +1,23 @@
 import { zValidator } from "@hono/zod-validator";
 import { Hono } from "hono";
 import { z } from "zod";
-import { createMockModel } from "../../tests/helpers/mock-model";
+import {
+  createMockModel,
+  createStream,
+  toStreamParts,
+} from "../../tests/helpers/mock-model";
 import type { ModelChunk } from "../agent/model-chunk";
 import { registerProvider } from "../providers";
 import { testProviderSchema, testScriptSchema } from "./test-schemas";
 
 let scriptedChunks: ModelChunk[] = [];
+let scriptedError: string | undefined;
+
+const buildStream = () => {
+  const parts = toStreamParts(scriptedChunks);
+  const error = scriptedError ? new Error(scriptedError) : undefined;
+  return createStream(parts, error);
+};
 
 export const testApi = new Hono()
   .post(
@@ -23,7 +34,7 @@ export const testApi = new Hono()
           setCredential: async () => { },
           removeCredential: async () => { },
           listModels: async () => models,
-          createModel: async () => createMockModel(scriptedChunks),
+          createModel: async () => createMockModel(buildStream()),
         });
       }
 
@@ -34,7 +45,9 @@ export const testApi = new Hono()
     "/model",
     zValidator("json", testScriptSchema),
     (ctx) => {
-      scriptedChunks = ctx.req.valid("json").chunks;
+      const body = ctx.req.valid("json");
+      scriptedChunks = body.chunks;
+      scriptedError = body.error;
       return ctx.json({ ok: true });
     },
   );
