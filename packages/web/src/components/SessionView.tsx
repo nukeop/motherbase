@@ -1,6 +1,7 @@
 import {
   AssistantMessage,
   Conversation,
+  ErrorMessage,
   PromptInput,
   UserMessage,
 } from "@motherbase/ui";
@@ -19,6 +20,10 @@ export const SessionView = ({ sessionId }: SessionViewProps) => {
     <div className="flex flex-1 flex-col min-h-0">
       <Conversation>
         {messages.map((entry, index) => {
+          if (entry.kind === "error") {
+            const key = `error-${index}`;
+            return <ErrorMessage key={key} message={entry.message} />;
+          }
           const key = `${entry.role}-${index}`;
           if (entry.role === "user") {
             return <UserMessage key={key} text={entry.parts[0]!.text} />;

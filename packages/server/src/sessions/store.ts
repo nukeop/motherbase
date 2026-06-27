@@ -1,7 +1,7 @@
-import { type MessageEntry, messageEntrySchema } from "@motherbase/core";
+import { type HistoryEntry, type MessageRole, historyEntrySchema } from "@motherbase/core";
 import { desc, eq, sql } from "drizzle-orm";
 import { db } from "../database";
-import { message, session } from "../database/schema";
+import { entry, session } from "../database/schema";
 
 type CreateSessionParams = {
   projectId: string;
@@ -33,32 +33,36 @@ export const getSession = (id: string) =>
 export const listSessions = () =>
   db.select().from(session).orderBy(desc(session.createdAt)).all();
 
-export const appendMessage = (sessionId: string, entry: MessageEntry) => {
+const roleForEntry = (historyEntry: HistoryEntry): MessageRole | null =>
+  historyEntry.kind === "message" ? historyEntry.role : null;
+
+export const appendEntry = (sessionId: string, historyEntry: HistoryEntry) => {
   const nextSeq = db
-    .select({ max: sql<number>`coalesce(max(${message.seq}), -1) + 1` })
-    .from(message)
-    .where(eq(message.sessionId, sessionId))
+    .select({ max: sql<number>`coalesce(max(${entry.seq}), -1) + 1` })
+    .from(entry)
+    .where(eq(entry.sessionId, sessionId))
     .get()!.max;
 
   return db
-    .insert(message)
+    .insert(entry)
     .values({
       id: crypto.randomUUID(),
       sessionId,
       seq: nextSeq,
-      role: entry.role,
-      data: JSON.stringify(entry),
+      kind: historyEntry.kind,
+      role: roleForEntry(historyEntry),
+      data: JSON.stringify(historyEntry),
       createdAt: Date.now(),
     })
     .returning()
     .get();
 };
 
-export const getMessages = (sessionId: string): MessageEntry[] =>
+export const getHistory = (sessionId: string): HistoryEntry[] =>
   db
     .select()
-    .from(message)
-    .where(eq(message.sessionId, sessionId))
-    .orderBy(message.seq)
+    .from(entry)
+    .where(eq(entry.sessionId, sessionId))
+    .orderBy(entry.seq)
     .all()
-    .map((row) => messageEntrySchema.parse(JSON.parse(row.data)));
+    .map((row) => historyEntrySchema.parse(JSON.parse(row.data)));

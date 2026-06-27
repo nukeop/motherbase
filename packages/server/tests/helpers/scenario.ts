@@ -2,7 +2,7 @@ import type { AgentEvent } from "@motherbase/core";
 import type { ModelChunk } from "../../src/agent/model-chunk";
 import { createModelClient } from "../../src/agent/model-client";
 import { Runner } from "../../src/agent/runner";
-import { createSession, getMessages } from "../../src/sessions/store";
+import { createSession, getHistory } from "../../src/sessions/store";
 import { createMockModel } from "./mock-model";
 
 export class Scenario {
@@ -20,7 +20,7 @@ export class Scenario {
   }
 
   get messages() {
-    return getMessages(this.session.id);
+    return getHistory(this.session.id);
   }
 
   scriptTurn(chunks: ModelChunk[]): void {

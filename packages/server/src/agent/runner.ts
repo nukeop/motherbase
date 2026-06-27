@@ -5,7 +5,7 @@ import {
   type MessageEntry,
   projectForModel,
 } from "@motherbase/core";
-import { appendMessage, getMessages } from "../sessions/store";
+import { appendEntry, getHistory } from "../sessions/store";
 import { MessageDraft } from "./message-draft";
 import type { ModelClient } from "./model-client";
 
@@ -29,9 +29,9 @@ export class Runner {
   }
 
   async send(message: MessageEntry): Promise<void> {
-    appendMessage(this.sessionId, message);
+    appendEntry(this.sessionId, message);
     const draft = new MessageDraft();
-    const history = getMessages(this.sessionId);
+    const history = getHistory(this.sessionId);
     const chunks = this.deps.model.stream(projectForModel(history));
     for await (const chunk of chunks) {
       if (chunk.type === "finish") {
@@ -44,7 +44,7 @@ export class Runner {
       });
     }
     const reply = draft.complete();
-    appendMessage(this.sessionId, reply);
+    appendEntry(this.sessionId, reply);
     this.deps.emit({ type: "message-completed", message: reply });
     this.deps.emit({ type: "turn-completed" });
   }

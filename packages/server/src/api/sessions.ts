@@ -8,7 +8,7 @@ import { Runner } from "../agent/runner";
 import { getProvider } from "../providers";
 import {
   createSession,
-  getMessages,
+  getHistory,
   listSessions,
 } from "../sessions/store";
 import { EventStream } from "../sse/event-stream";
@@ -34,7 +34,7 @@ export const sessionsApi = new Hono()
   })
   .get("/:id", requireSession, (ctx) => {
     const session = ctx.var.session;
-    const messages = getMessages(session.id);
+    const messages = getHistory(session.id);
 
     return ctx.json({ ...session, messages });
   })

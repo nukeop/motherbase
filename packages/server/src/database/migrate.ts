@@ -13,16 +13,17 @@ export const migrate = (sqlite: Database) => {
     )
   `);
   sqlite.run(`
-    CREATE TABLE IF NOT EXISTS message (
+    CREATE TABLE IF NOT EXISTS entry (
       id TEXT PRIMARY KEY,
       session_id TEXT NOT NULL REFERENCES session(id),
       seq INTEGER NOT NULL,
-      role TEXT NOT NULL,
+      kind TEXT NOT NULL CHECK (kind IN ('message', 'error')),
+      role TEXT CHECK (role IS NULL OR role IN ('user', 'assistant')),
       data TEXT NOT NULL,
       created_at INTEGER NOT NULL
     )
   `);
   sqlite.run(`
-    CREATE UNIQUE INDEX IF NOT EXISTS message_session_seq_idx ON message(session_id, seq)
+    CREATE UNIQUE INDEX IF NOT EXISTS entry_session_seq_idx ON entry(session_id, seq)
   `);
 };
