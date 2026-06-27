@@ -13,13 +13,24 @@ export const messageEntrySchema = z.object({
   parts: z.array(messagePartSchema),
 });
 
+export const errorOriginSchema = z.enum(["provider", "internal"]);
+
+export const errorEntrySchema = z.object({
+  kind: z.literal("error"),
+  origin: errorOriginSchema,
+  message: z.string(),
+});
+
 export const historyEntrySchema = z.discriminatedUnion("kind", [
   messageEntrySchema,
+  errorEntrySchema,
 ]);
 
 export type MessagePart = z.infer<typeof messagePartSchema>;
 export type MessageRole = z.infer<typeof messageRoleSchema>;
 export type MessageEntry = z.infer<typeof messageEntrySchema>;
+export type ErrorOrigin = z.infer<typeof errorOriginSchema>;
+export type ErrorEntry = z.infer<typeof errorEntrySchema>;
 export type HistoryEntry = z.infer<typeof historyEntrySchema>;
 
 export const projectForModel = (
