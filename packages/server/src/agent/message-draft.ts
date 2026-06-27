@@ -14,6 +14,10 @@ type DeltaChunk = Extract<ModelChunk, { type: keyof typeof partTypeByDelta }>;
 export class MessageDraft {
   #parts: MessagePart[] = [];
 
+  get parts(): readonly MessagePart[] {
+    return this.#parts;
+  }
+
   push(delta: DeltaChunk): void {
     const type = partTypeByDelta[delta.type];
     const last = this.#parts.at(-1);

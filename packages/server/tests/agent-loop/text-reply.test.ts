@@ -22,9 +22,9 @@ describe("text reply turn", () => {
     };
 
     expect(scenario.events).toEqual([
-      { type: "text-delta", text: "Hi" },
-      { type: "text-delta", text: " there" },
-      { type: "text-delta", text: "!" },
+      { type: "message-in-progress", parts: [{ type: "text", text: "Hi" }] },
+      { type: "message-in-progress", parts: [{ type: "text", text: "Hi there" }] },
+      { type: "message-in-progress", parts: [{ type: "text", text: "Hi there!" }] },
       { type: "message-completed", message: assistantMessage },
       { type: "turn-completed" },
     ]);
@@ -67,10 +67,10 @@ describe("text reply turn", () => {
     };
 
     expect(scenario.events).toEqual([
-      { type: "reasoning-delta", text: "The user greeted me. " },
-      { type: "reasoning-delta", text: "I should greet back." },
-      { type: "text-delta", text: "Hey" },
-      { type: "text-delta", text: "!" },
+      { type: "message-in-progress", parts: [{ type: "reasoning", text: "The user greeted me. " }] },
+      { type: "message-in-progress", parts: [{ type: "reasoning", text: "The user greeted me. I should greet back." }] },
+      { type: "message-in-progress", parts: [{ type: "reasoning", text: "The user greeted me. I should greet back." }, { type: "text", text: "Hey" }] },
+      { type: "message-in-progress", parts: [{ type: "reasoning", text: "The user greeted me. I should greet back." }, { type: "text", text: "Hey!" }] },
       { type: "message-completed", message: assistantMessage },
       { type: "turn-completed" },
     ]);

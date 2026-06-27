@@ -37,8 +37,11 @@ export class Runner {
       if (chunk.type === "finish") {
         continue;
       }
-      this.deps.emit({ type: chunk.type, text: chunk.text });
       draft.push(chunk);
+      this.deps.emit({
+        type: "message-in-progress",
+        parts: draft.parts.map((part) => ({ ...part })),
+      });
     }
     const reply = draft.complete();
     appendMessage(this.sessionId, reply);
