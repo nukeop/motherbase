@@ -1,10 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { SessionView } from "../components/SessionView";
 
 export const Route = createFileRoute("/sessions/$sessionId")({
-  component: SessionView,
+  component: () => {
+    const { sessionId } = Route.useParams();
+    return <SessionView sessionId={sessionId} />;
+  },
 });
-
-function SessionView() {
-  const { sessionId } = Route.useParams();
-  return <div className="p-4 font-nav text-xs uppercase tracking-widest text-cream/40">{sessionId}</div>;
-}
