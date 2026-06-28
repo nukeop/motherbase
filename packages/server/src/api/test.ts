@@ -1,23 +1,12 @@
 import { zValidator } from "@hono/zod-validator";
 import { Hono } from "hono";
 import { z } from "zod";
-import {
-  createMockModel,
-  createStream,
-  toStreamParts,
-} from "../../tests/helpers/mock-model";
-import type { ModelChunk } from "../agent/model-chunk";
+import { createMockModel } from "../../tests/helpers/mock-model";
+import { TestScripts } from "../../tests/helpers/test-scripts";
 import { registerProvider } from "../providers";
 import { testProviderSchema, testScriptSchema } from "./test-schemas";
 
-let scriptedChunks: ModelChunk[] = [];
-let scriptedError: string | undefined;
-
-const buildStream = () => {
-  const parts = toStreamParts(scriptedChunks);
-  const error = scriptedError ? new Error(scriptedError) : undefined;
-  return createStream(parts, error);
-};
+const scripts = new TestScripts();
 
 export const testApi = new Hono()
   .post(
@@ -31,10 +20,11 @@ export const testApi = new Hono()
         registerProvider({
           id: provider.id,
           name: provider.name,
-          setCredential: async () => { },
-          removeCredential: async () => { },
+          setCredential: async () => {},
+          removeCredential: async () => {},
           listModels: async () => models,
-          createModel: async () => createMockModel(buildStream()),
+          createModel: async (modelId) =>
+            createMockModel(scripts.buildStream(provider.id, modelId)),
         });
       }
 
@@ -45,9 +35,8 @@ export const testApi = new Hono()
     "/model",
     zValidator("json", testScriptSchema),
     (ctx) => {
-      const body = ctx.req.valid("json");
-      scriptedChunks = body.chunks;
-      scriptedError = body.error;
+      const { provider, model, chunks, error } = ctx.req.valid("json");
+      scripts.set(provider, model, { chunks, error });
       return ctx.json({ ok: true });
     },
   );

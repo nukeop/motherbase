@@ -9,6 +9,8 @@ export const testProviderSchema = z.object({
 });
 
 export const testScriptSchema = z.object({
+  provider: z.string(),
+  model: z.string(),
   chunks: z.array(modelChunkSchema),
   error: z.string().optional(),
 });

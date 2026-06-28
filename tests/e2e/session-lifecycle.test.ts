@@ -18,7 +18,7 @@ test.beforeEach(async ({ request }) => {
     data: { providers: [TEST_PROVIDER] },
   });
   await request.post("http://localhost:4800/_test/model", {
-    data: { chunks: RESPONSE_CHUNKS },
+    data: { provider: "test-provider", model: "test-model", chunks: RESPONSE_CHUNKS },
   });
   await request.post("http://localhost:4800/state/provider", {
     data: { provider: "test-provider" },
