@@ -2,30 +2,31 @@ import { zValidator } from "@hono/zod-validator";
 import type { MessageEntry } from "@motherbase/core";
 import { Hono } from "hono";
 import { streamSSE } from "hono/streaming";
-import { z } from "zod";
 import { createModelClient } from "../agent/model-client";
 import { Runner } from "../agent/runner";
 import { getProvider } from "../providers";
+import { readConfig } from "../providers/config";
 import {
   createSession,
   getHistory,
   listSessions,
+  updateSession,
 } from "../sessions/store";
 import { EventStream } from "../sse/event-stream";
 import { emitToSession, sessionSource } from "../sse/sources/session";
 import { requireSession } from "./middleware";
-import { getCurrentState } from "./state";
+import { sendMessageSchema, sessionParamsSchema } from "./session-schemas";
 
 // TODO: this should be gone once I introduce the concept of projects. Placeholder
 const DEFAULT_PROJECT_ID = "default";
 
 export const sessionsApi = new Hono()
   .post("/", async (ctx) => {
-    const state = await getCurrentState();
+    const defaults = await readConfig();
     const session = createSession({
       projectId: DEFAULT_PROJECT_ID,
-      providerId: state.provider,
-      modelId: state.model,
+      providerId: defaults.provider,
+      modelId: defaults.model,
     });
     return ctx.json(session, 201);
   })
@@ -38,20 +39,30 @@ export const sessionsApi = new Hono()
 
     return ctx.json({ ...session, messages });
   })
+  .patch(
+    "/:id",
+    requireSession,
+    zValidator("json", sessionParamsSchema),
+    (ctx) => {
+      const session = ctx.var.session;
+      const body = ctx.req.valid("json");
+      const updated = updateSession(session.id, body);
+      return ctx.json(updated);
+    },
+  )
   .post(
     "/:id/messages",
     requireSession,
-    zValidator("json", z.object({ text: z.string().min(1) })),
+    zValidator("json", sendMessageSchema),
     async (ctx) => {
       const session = ctx.var.session;
-      const state = await getCurrentState();
 
-      if (!state.provider || !state.model) {
+      if (!session.providerId || !session.modelId) {
         return ctx.json({ error: "No provider or model selected" }, 400);
       }
 
-      const languageModel = await getProvider(state.provider).createModel(
-        state.model,
+      const languageModel = await getProvider(session.providerId).createModel(
+        session.modelId,
       );
       const model = createModelClient(languageModel);
 

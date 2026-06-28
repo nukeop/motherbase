@@ -33,6 +33,19 @@ export const getSession = (id: string) =>
 export const listSessions = () =>
   db.select().from(session).orderBy(desc(session.createdAt)).all();
 
+type UpdateSessionParams = {
+  providerId?: string;
+  modelId?: string;
+};
+
+export const updateSession = (id: string, params: UpdateSessionParams) =>
+  db
+    .update(session)
+    .set(params)
+    .where(eq(session.id, id))
+    .returning()
+    .get();
+
 const roleForEntry = (historyEntry: HistoryEntry): MessageRole | null =>
   historyEntry.kind === "message" ? historyEntry.role : null;
 

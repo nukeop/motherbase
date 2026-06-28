@@ -3,7 +3,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { BASE_URL, client } from "../api/client";
 
-const sessionKey = (sessionId: string) => ["session", sessionId];
+import { sessionKey } from "./query-keys";
 
 export const useSession = (sessionId: string) => {
   const queryClient = useQueryClient();
@@ -11,7 +11,7 @@ export const useSession = (sessionId: string) => {
     null,
   );
 
-  const { data } = useQuery({
+  const { data, isLoading } = useQuery({
     queryKey: sessionKey(sessionId),
     queryFn: async () => {
       const response = await client.sessions[":id"].$get({
@@ -53,6 +53,10 @@ export const useSession = (sessionId: string) => {
   }, [sessionId, queryClient]);
 
   return {
+    isLoading,
+    session: data
+      ? { providerId: data.providerId, modelId: data.modelId }
+      : undefined,
     messages: data?.messages ?? [],
     streamingParts,
     sendMessage,

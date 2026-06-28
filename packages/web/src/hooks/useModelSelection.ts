@@ -1,61 +1,49 @@
 import type { ComboBoxItem, ModelData, SelectItem } from "@motherbase/ui";
-import {
-  useMutation,
-  useQuery,
-  useQueryClient,
-} from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { client } from "../api/client";
+import { sessionKey } from "./query-keys";
 import { useModels } from "./useModels";
 import { useProviders } from "./useProviders";
-
-type ServerState = {
-  provider: string;
-  model: string;
-};
-
-const STATE_KEY = ["serverState"];
 
 const toSelectItems = <T extends { id: string; name: string }>(
   items: T[],
 ): SelectItem[] => items.map((item) => ({ label: item.name, value: item.id }));
 
-export const useModelSelection = () => {
+export const useModelSelection = (
+  sessionId: string,
+  providerId: string,
+  modelId: string,
+) => {
   const queryClient = useQueryClient();
 
-  const { data: state } = useQuery({
-    queryKey: STATE_KEY,
-    queryFn: async () => {
-      const response = await client.state.$get();
-      return response.json() as Promise<ServerState>;
-    },
-  });
-
   const { mutate: setProvider } = useMutation({
-    mutationFn: async (provider: string) => {
-      const response = await client.state.provider.$post({
-        json: { provider },
+    mutationFn: async (providerId: string) => {
+      const response = await client.sessions[":id"].$patch({
+        param: { id: sessionId },
+        json: { providerId },
       });
-      return response.json() as Promise<ServerState>;
+      return response.json();
     },
-    onSuccess: (data) => {
-      queryClient.setQueryData(STATE_KEY, data);
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: sessionKey(sessionId) });
     },
   });
 
   const { mutate: setModel } = useMutation({
-    mutationFn: async (model: string) => {
-      const response = await client.state.model.$post({
-        json: { model },
+    mutationFn: async (modelId: string) => {
+      const response = await client.sessions[":id"].$patch({
+        param: { id: sessionId },
+        json: { modelId },
       });
-      return response.json() as Promise<ServerState>;
+      return response.json();
     },
-    onSuccess: (data) => {
-      queryClient.setQueryData(STATE_KEY, data);
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: sessionKey(sessionId) });
     },
   });
 
   const models: ComboBoxItem<string, ModelData>[] = (
-    useModels(state?.provider ?? "").data ?? []
+    useModels(providerId).data ?? []
   ).map((model) => ({
     label: model.name,
     value: model.id,
@@ -69,8 +57,8 @@ export const useModelSelection = () => {
   return {
     providers: toSelectItems(useProviders().data ?? []),
     models,
-    selectedProvider: state?.provider ?? "",
-    selectedModel: state?.model ?? "",
+    selectedProvider: providerId,
+    selectedModel: modelId,
     onProviderChange: setProvider,
     onModelChange: setModel,
   };

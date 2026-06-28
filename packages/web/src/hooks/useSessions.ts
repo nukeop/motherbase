@@ -1,13 +1,12 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { client } from "../api/client";
-
-const SESSIONS_KEY = ["sessions"];
+import { sessionsKey } from "./query-keys";
 
 export const useSessions = () => {
   const queryClient = useQueryClient();
 
   const query = useQuery({
-    queryKey: SESSIONS_KEY,
+    queryKey: sessionsKey,
     queryFn: async () => {
       const response = await client.sessions.$get();
       return response.json();
@@ -20,7 +19,7 @@ export const useSessions = () => {
       return response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: SESSIONS_KEY });
+      queryClient.invalidateQueries({ queryKey: sessionsKey });
     },
   });
 

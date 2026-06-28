@@ -1,38 +1,26 @@
-import {
-  AssistantMessage,
-  Conversation,
-  ErrorMessage,
-  PromptInput,
-  UserMessage,
-} from "@motherbase/ui";
-import { useModelSelection } from "../hooks/useModelSelection";
 import { useSession } from "../hooks/useSession";
+import { LoadedSessionView } from "./LoadedSessionView";
 
 type SessionViewProps = {
   sessionId: string;
 };
 
 export const SessionView = ({ sessionId }: SessionViewProps) => {
-  const { messages, streamingParts, sendMessage } = useSession(sessionId);
-  const modelSelection = useModelSelection();
+  const { isLoading, session, messages, streamingParts, sendMessage } =
+    useSession(sessionId);
+
+  if (isLoading || !session) {
+    return null;
+  }
 
   return (
-    <div className="flex flex-1 flex-col min-h-0">
-      <Conversation>
-        {messages.map((entry, index) => {
-          if (entry.kind === "error") {
-            const key = `error-${index}`;
-            return <ErrorMessage key={key} message={entry.message} />;
-          }
-          const key = `${entry.role}-${index}`;
-          if (entry.role === "user") {
-            return <UserMessage key={key} text={entry.parts[0]!.text} />;
-          }
-          return <AssistantMessage key={key} parts={entry.parts} />;
-        })}
-        {streamingParts && <AssistantMessage parts={streamingParts} />}
-      </Conversation>
-      <PromptInput {...modelSelection} onSubmit={sendMessage} />
-    </div>
+    <LoadedSessionView
+      sessionId={sessionId}
+      providerId={session.providerId}
+      modelId={session.modelId}
+      messages={messages}
+      streamingParts={streamingParts}
+      sendMessage={sendMessage}
+    />
   );
 };
