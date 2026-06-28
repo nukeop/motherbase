@@ -1,9 +1,15 @@
 import { expect, test } from "@playwright/test";
+import {
+  createSession,
+  SERVER_URL,
+  selectModel,
+  selectProvider,
+} from "./helpers";
 
 const TEST_PROVIDER = {
-  id: "test-provider",
-  name: "Test Provider",
-  models: [{ id: "test-model", name: "Test Model" }],
+  id: "lifecycle-provider",
+  name: "Lifecycle Provider",
+  models: [{ id: "lifecycle-model", name: "Lifecycle Model" }],
 };
 
 const RESPONSE_CHUNKS = [
@@ -13,25 +19,25 @@ const RESPONSE_CHUNKS = [
   { type: "finish", reason: "stop" },
 ];
 
-test.beforeEach(async ({ request }) => {
-  await request.post("http://localhost:4800/_test/providers", {
+test.beforeEach(async ({ page, request }) => {
+  await request.post(`${SERVER_URL}/_test/providers`, {
     data: { providers: [TEST_PROVIDER] },
   });
-  await request.post("http://localhost:4800/_test/model", {
-    data: { provider: "test-provider", model: "test-model", chunks: RESPONSE_CHUNKS },
+  await request.post(`${SERVER_URL}/_test/model`, {
+    data: {
+      provider: "lifecycle-provider",
+      model: "lifecycle-model",
+      chunks: RESPONSE_CHUNKS,
+    },
   });
-  await request.post("http://localhost:4800/state/provider", {
-    data: { provider: "test-provider" },
-  });
-  await request.post("http://localhost:4800/state/model", {
-    data: { model: "test-model" },
-  });
+  await createSession(page);
 });
 
-test("user sends a message and sees the streamed response", async ({ page }) => {
-  await page.goto("/");
-  await page.getByRole("button", { name: /new session/i }).click();
-  await expect(page).toHaveURL(/\/sessions\/.+/);
+test("user sends a message and sees the streamed response", async ({
+  page,
+}) => {
+  await selectProvider(page, "Lifecycle Provider");
+  await selectModel(page, "Lifecycle Model");
 
   await page.getByPlaceholder("Send a message...").fill("Hello Motherbase");
   await page.keyboard.press("Enter");

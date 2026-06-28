@@ -1,37 +1,46 @@
 import { expect, test } from "@playwright/test";
+import { createSession, SERVER_URL, selectProvider } from "./helpers";
 
 const TEST_PROVIDER = {
-  id: "test-provider",
-  name: "Test Provider",
+  id: "selection-provider",
+  name: "Selection Provider",
   models: [
-    { id: "test-model-1", name: "Test Model Alpha" },
-    { id: "test-model-2", name: "Test Model Beta" },
+    { id: "selection-model-alpha", name: "Selection Model Alpha" },
+    { id: "selection-model-beta", name: "Selection Model Beta" },
   ],
 };
 
-test.beforeEach(async ({ request }) => {
-  await request.post("http://localhost:4800/_test/providers", {
+test.beforeEach(async ({ page, request }) => {
+  await request.post(`${SERVER_URL}/_test/providers`, {
     data: { providers: [TEST_PROVIDER] },
   });
-  await request.post("http://localhost:4800/state/provider", {
-    data: { provider: "test-provider" },
-  });
+  await createSession(page);
 });
 
-test("selecting a provider shows its name in the selector", async ({ page }) => {
-  await page.goto("/");
-  await page.getByRole("button", { name: /new session/i }).click();
+test("selecting a provider shows its models in the model dropdown", async ({
+  page,
+}) => {
+  await selectProvider(page, "Selection Provider");
 
-  await expect(page.getByText("Test Provider")).toBeVisible();
+  await page.getByPlaceholder("Search models...").click();
+
+  await expect(
+    page.getByRole("option", { name: /Selection Model Alpha/ }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("option", { name: /Selection Model Beta/ }),
+  ).toBeVisible();
 });
 
-test("selecting a model from the dropdown updates the selector", async ({ page }) => {
-  await page.goto("/");
-  await page.getByRole("button", { name: /new session/i }).click();
+test("selecting a model updates the input value", async ({ page }) => {
+  await selectProvider(page, "Selection Provider");
 
-  const modelSearch = page.getByPlaceholder("Search models...");
-  await modelSearch.click();
-  await page.getByText("Test Model Alpha").click();
+  await page.getByPlaceholder("Search models...").click();
+  await page
+    .getByRole("option", { name: /Selection Model Alpha/ })
+    .click();
 
-  await expect(modelSearch).toHaveValue("Test Model Alpha");
+  await expect(page.getByPlaceholder("Search models...")).toHaveValue(
+    "Selection Model Alpha",
+  );
 });
