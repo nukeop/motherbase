@@ -2,7 +2,7 @@ import { z } from "zod";
 
 import { configPath } from "../paths";
 
-const configSchema = z.object({
+export const configSchema = z.object({
   provider: z.string(),
   model: z.string(),
 });

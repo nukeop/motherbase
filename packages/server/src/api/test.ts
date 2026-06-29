@@ -1,10 +1,15 @@
 import { zValidator } from "@hono/zod-validator";
 import { Hono } from "hono";
 import { z } from "zod";
+import { installFileMock, mockFile } from "../../tests/helpers/mock-files";
 import { createMockModel } from "../../tests/helpers/mock-model";
 import { TestScripts } from "../../tests/helpers/test-scripts";
+import { configPath } from "../paths";
 import { registerProvider } from "../providers";
+import { configSchema } from "../providers/config";
 import { testProviderSchema, testScriptSchema } from "./test-schemas";
+
+installFileMock();
 
 const scripts = new TestScripts();
 
@@ -37,6 +42,15 @@ export const testApi = new Hono()
     (ctx) => {
       const { provider, model, chunks, error } = ctx.req.valid("json");
       scripts.set(provider, model, { chunks, error });
+      return ctx.json({ ok: true });
+    },
+  )
+  .post(
+    "/config",
+    zValidator("json", configSchema),
+    (ctx) => {
+      const config = ctx.req.valid("json");
+      mockFile(configPath, JSON.stringify(config));
       return ctx.json({ ok: true });
     },
   );
