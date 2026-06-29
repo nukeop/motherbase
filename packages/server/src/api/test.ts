@@ -9,8 +9,6 @@ import { registerProvider } from "../providers";
 import { configSchema } from "../providers/config";
 import { testProviderSchema, testScriptSchema } from "./test-schemas";
 
-installFileMock();
-
 const scripts = new TestScripts();
 
 export const testApi = new Hono()
@@ -49,6 +47,7 @@ export const testApi = new Hono()
     "/config",
     zValidator("json", configSchema),
     (ctx) => {
+      installFileMock();
       const config = ctx.req.valid("json");
       mockFile(configPath, JSON.stringify(config));
       return ctx.json({ ok: true });

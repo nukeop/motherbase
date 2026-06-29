@@ -28,6 +28,7 @@ export const SessionSidebar = () => {
     <div className="flex flex-col h-full">
       <button
         type="button"
+        data-testid="create-session"
         onClick={onCreateSession}
         className="flex items-center gap-2 mx-2 my-2 px-3 py-1.5 font-nav text-xs uppercase tracking-widest text-cream/60 border border-cream/10 cursor-pointer transition-colors hover:text-cream hover:border-cream/25"
       >

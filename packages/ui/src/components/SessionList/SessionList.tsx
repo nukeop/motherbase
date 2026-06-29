@@ -17,7 +17,7 @@ export const SessionList: FC<SessionListProps> = ({
   selectedId,
   onSelect,
 }) => (
-  <nav className="flex flex-col overflow-y-auto">
+  <nav data-testid="session-list" className="flex flex-col overflow-y-auto">
     {sessions.map((session) => {
       const isSelected = session.id === selectedId;
       return (
