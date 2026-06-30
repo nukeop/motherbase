@@ -1,16 +1,28 @@
 import { getLogger } from "@logtape/logtape";
-import type { MachineState } from "@motherbase/core";
-import {
-  type AgentEvent,
-  type ErrorEntry,
-  type MessageEntry,
-  projectForModel,
+import type {
+  AgentEvent,
+  HandlerState,
+  MachineState,
+  MessageEntry,
 } from "@motherbase/core";
-import { appendEntry, getHistory } from "../sessions/store";
+import { completing } from "./handlers/completing";
+import { error } from "./handlers/error";
+import { messageReceived } from "./handlers/message-received";
+import { preparingContext } from "./handlers/preparing-context";
+import { streaming } from "./handlers/streaming";
 import { MessageDraft } from "./message-draft";
 import type { ModelClient } from "./model-client";
+import type { RunContext, StateHandler } from "./types";
 
 const logger = getLogger(["Motherbase", "Agent", "Runner"]);
+
+const handlers: Record<HandlerState, StateHandler> = {
+  "message-received": messageReceived,
+  "preparing-context": preparingContext,
+  streaming,
+  completing,
+  error,
+};
 
 export type Deps = {
   model: ModelClient;
@@ -23,48 +35,36 @@ export class Runner {
   constructor(
     private readonly sessionId: string,
     private readonly deps: Deps,
-  ) { }
+  ) {}
 
   get state(): MachineState {
     return this.#state;
   }
 
   async send(message: MessageEntry): Promise<void> {
-    appendEntry(this.sessionId, message);
-    const draft = new MessageDraft();
-    const history = getHistory(this.sessionId);
+    const ctx: RunContext = {
+      sessionId: this.sessionId,
+      model: this.deps.model,
+      emit: this.deps.emit,
+      message,
+      draft: new MessageDraft(),
+      chunks: null,
+      error: null,
+    };
 
-    try {
-      const chunks = this.deps.model.stream(projectForModel(history));
-      for await (const chunk of chunks) {
-        if (chunk.type === "finish") {
-          continue;
-        }
-        draft.push(chunk);
-        this.deps.emit({
-          type: "message-in-progress",
-          parts: draft.parts.map((part) => ({ ...part })),
-        });
-      }
-      const reply = draft.complete();
-      appendEntry(this.sessionId, reply);
-      this.deps.emit({ type: "message-completed", message: reply });
-    } catch (err) {
-      logger.error`Model stream error: ${err}`;
+    await this.run({ type: "message-received" }, ctx);
+    this.deps.emit({ type: "turn-completed" });
+  }
 
-      if (draft.parts.length > 0) {
-        appendEntry(this.sessionId, draft.complete());
-      }
+  private async run(state: MachineState & { type: HandlerState }, ctx: RunContext): Promise<void> {
+    this.#state = state;
+    const next = await handlers[state.type](ctx);
 
-      const error: ErrorEntry = {
-        kind: "error",
-        origin: "provider",
-        message: err instanceof Error ? err.message : String(err),
-      };
-      appendEntry(this.sessionId, error);
-      this.deps.emit({ type: "error", error });
+    if (!next) {
+      this.#state = { type: "idle" };
+      return;
     }
 
-    this.deps.emit({ type: "turn-completed" });
+    return this.run(next, ctx);
   }
 }

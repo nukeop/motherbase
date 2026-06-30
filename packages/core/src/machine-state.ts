@@ -14,3 +14,5 @@ export type State = z.infer<typeof stateSchema>;
 export const machineStateSchema = z.object({ type: stateSchema });
 
 export type MachineState = z.infer<typeof machineStateSchema>;
+
+export type HandlerState = Exclude<State, "idle">;
