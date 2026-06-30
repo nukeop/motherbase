@@ -23,6 +23,7 @@ type SelectProps<T extends string = string> = {
   onChange: (value: T) => void;
   options: SelectItem<T>[];
   placeholder?: string;
+  "data-testid"?: string;
 };
 
 export const Select = <T extends string = string>({
@@ -30,6 +31,7 @@ export const Select = <T extends string = string>({
   onChange,
   options,
   placeholder = "Select...",
+  "data-testid": testId,
 }: SelectProps<T>) => {
   const selected = options.find((o) => o.value === value);
 
@@ -53,6 +55,7 @@ export const Select = <T extends string = string>({
     <Listbox value={value} onChange={onChange}>
       <ListboxButton
         ref={refs.setReference}
+        data-testid={testId}
         className="group flex cursor-pointer items-center gap-1.5 bg-linear-to-b from-steel to-gunmetal px-2.5 py-1 font-nav text-[11px] tracking-widest text-cream/80 uppercase shadow-[inset_0_1px_0_rgba(255,255,255,0.06),0_1px_2px_rgba(0,0,0,0.3)] outline-none transition-colors hover:text-cream group-data-open:text-orange"
       >
         {selected?.label ?? placeholder}

@@ -4,6 +4,7 @@ import {
   SERVER_URL,
   selectModel,
   selectProvider,
+  setTestConfig,
 } from "./helpers";
 
 const TEST_PROVIDER = {
@@ -13,6 +14,7 @@ const TEST_PROVIDER = {
 };
 
 test.beforeEach(async ({ page, request }) => {
+  await setTestConfig(request);
   await request.post(`${SERVER_URL}/_test/providers`, {
     data: { providers: [TEST_PROVIDER] },
   });

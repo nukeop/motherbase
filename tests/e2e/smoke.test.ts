@@ -18,6 +18,6 @@ test("creating a session adds it to the sidebar and navigates to it", async ({
   await page.getByTestId("create-session").click();
   await expect(page).toHaveURL(/\/sessions\/.+/);
   await expect(
-    page.getByTestId("session-list").getByText("New session"),
+    page.getByTestId("session-list").getByText("New session").first(),
   ).toBeVisible();
 });

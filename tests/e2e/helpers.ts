@@ -12,12 +12,21 @@ const DEFAULT_TEST_CONFIG: TestConfig = {
   model: "default-model",
 };
 
+const DEFAULT_TEST_PROVIDER = {
+  id: "default-provider",
+  name: "Default Provider",
+  models: [{ id: "default-model", name: "Default Model" }],
+};
+
 export const setTestConfig = async (
   request: APIRequestContext,
   config: TestConfig = DEFAULT_TEST_CONFIG,
 ) => {
   await request.post(`${SERVER_URL}/_test/config`, {
     data: config,
+  });
+  await request.post(`${SERVER_URL}/_test/providers`, {
+    data: { providers: [DEFAULT_TEST_PROVIDER] },
   });
 };
 
@@ -28,11 +37,11 @@ export const createSession = async (page: Page) => {
 };
 
 export const selectProvider = async (page: Page, name: string) => {
-  await page.getByRole("button", { name: "Select..." }).click();
+  await page.getByTestId("provider-select").click();
   await page.getByRole("option", { name }).click();
 };
 
 export const selectModel = async (page: Page, name: string) => {
   await page.getByPlaceholder("Search models...").click();
-  await page.getByRole("option", { name: new RegExp(name) }).click();
+  await page.getByRole("option", { name }).click();
 };

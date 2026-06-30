@@ -31,6 +31,7 @@ export const PromptInput = ({
           value={selectedProvider}
           onChange={onProviderChange}
           options={providers}
+          data-testid="provider-select"
         />
         <div className="h-3 w-px bg-cream/10" />
         <ComboBox
