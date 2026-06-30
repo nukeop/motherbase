@@ -1,7 +1,9 @@
+import { Markdown } from "../Markdown";
+
 type TextPartProps = {
   text: string;
 };
 
 export const TextPart = ({ text }: TextPartProps) => {
-  return <div>{text}</div>;
+  return <Markdown>{text}</Markdown>;
 };

@@ -115,6 +115,59 @@ Content-Type: application/json
   ),
 };
 
+export const MultipleLanguages: Story = {
+  render: () => (
+    <Markdown>
+      {`TypeScript:
+
+\`\`\`typescript
+type Session = {
+  id: string;
+  createdAt: Date;
+  model: string;
+};
+
+const createSession = async (model: string): Promise<Session> => {
+  const id = crypto.randomUUID();
+  return { id, createdAt: new Date(), model };
+};
+\`\`\`
+
+Python:
+
+\`\`\`python
+def create_session(model: str) -> dict:
+    import uuid
+    from datetime import datetime
+    return {
+        "id": str(uuid.uuid4()),
+        "created_at": datetime.now().isoformat(),
+        "model": model,
+    }
+\`\`\`
+
+Bash:
+
+\`\`\`bash
+#!/bin/bash
+curl -X POST http://localhost:4800/sessions \\
+  -H "Content-Type: application/json" \\
+  -d '{"model": "gpt-4o"}' | jq .
+\`\`\`
+
+JSON:
+
+\`\`\`json
+{
+  "id": "abc123",
+  "createdAt": "2026-01-01T00:00:00.000Z",
+  "model": "gpt-4o"
+}
+\`\`\``}
+    </Markdown>
+  ),
+};
+
 export const Blockquote: Story = {
   render: () => (
     <Markdown>
@@ -187,6 +240,24 @@ A few things to note:
 This change also fixes the related issue where **deleted sessions** could still receive replies if a runner was mid-flight when the delete happened. The transaction will fail to find the session and abort cleanly.
 
 See the [Drizzle transactions docs](https://orm.drizzle.team/docs/transactions) for the full API.`}
+    </Markdown>
+  ),
+};
+
+export const Image: Story = {
+  render: () => (
+    <Markdown>
+      {`Here's a standalone image:
+
+![Placeholder 600x400](https://placehold.co/600x400/2d3038/cream)
+
+And here's an image inline within a paragraph: ![small placeholder](https://placehold.co/120x80/2d3038/cream) followed by more text.
+
+You can also add a caption below:
+
+![Wide placeholder](https://placehold.co/600x200/2d3038/orange)
+
+*Figure 1: A wide placeholder image.*`}
     </Markdown>
   ),
 };

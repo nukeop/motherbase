@@ -1,4 +1,5 @@
 import type { Components } from "react-markdown";
+import { CodeBlock } from "./CodeBlock";
 
 export const components: Components = {
   h1: ({ children }) => (
@@ -52,14 +53,25 @@ export const components: Components = {
     </blockquote>
   ),
 
-  code: ({ children }) => (
-    <code className="rounded border border-steel/20 bg-cream px-1 py-0.5 font-mono text-xs">
-      {children}
-    </code>
-  ),
+  code: ({ children, className }) => {
+    const language = /^language-(\w+)$/.exec(className ?? "")?.[1];
+    if (language) {
+      return (
+        <CodeBlock
+          code={String(children).replace(/\n$/, "")}
+          language={language}
+        />
+      );
+    }
+    return (
+      <code className="rounded border border-steel/20 bg-cream px-1 py-0.5 font-mono text-xs">
+        {children}
+      </code>
+    );
+  },
 
   pre: ({ children }) => (
-    <pre className="overflow-x-auto rounded bg-gunmetal px-4 py-3 font-mono text-xs text-cream [&_code]:border-0 [&_code]:bg-transparent [&_code]:p-0">
+    <pre className="whitespace-pre-wrap wrap-break-word rounded bg-gunmetal px-4 py-3 font-mono text-xs text-cream [&_code]:border-0 [&_code]:bg-transparent [&_code]:p-0">
       {children}
     </pre>
   ),
