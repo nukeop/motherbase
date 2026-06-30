@@ -1,6 +1,5 @@
 import type { AgentEvent, HandlerState, MessageEntry } from "@motherbase/core";
 import type { MessageDraft } from "./message-draft";
-import type { ModelChunk } from "./model-chunk";
 import type { ModelClient } from "./model-client";
 
 export type StateHandler = (
@@ -12,7 +11,7 @@ export type RunContext = {
   model: ModelClient;
   emit: (event: AgentEvent) => void;
   message: MessageEntry;
+  messages: MessageEntry[];
   draft: MessageDraft;
-  chunks: AsyncIterable<ModelChunk> | null;
   error: Error | null;
 };

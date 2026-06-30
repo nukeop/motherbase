@@ -47,8 +47,8 @@ export class Runner {
       model: this.deps.model,
       emit: this.deps.emit,
       message,
+      messages: [],
       draft: new MessageDraft(),
-      chunks: null,
       error: null,
     };
 
