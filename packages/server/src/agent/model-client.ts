@@ -1,9 +1,7 @@
-import { getLogger } from "@logtape/logtape";
 import type { MessageEntry } from "@motherbase/core";
+import { toError } from "@motherbase/core";
 import { type LanguageModel, type ModelMessage, streamText } from "ai";
 import type { FinishReason, ModelChunk } from "./model-chunk";
-
-const logger = getLogger(["Motherbase", "Agent", "ModelClient"]);
 
 export type ModelClient = {
   stream: (messages: readonly MessageEntry[]) => AsyncIterable<ModelChunk>;
@@ -35,7 +33,12 @@ async function* streamChunks(
   model: LanguageModel,
   messages: readonly MessageEntry[],
 ): AsyncIterable<ModelChunk> {
-  const result = streamText({ model, messages: messages.map(toModelMessage) });
+  const result = streamText({
+    model,
+    messages: messages.map(toModelMessage),
+    // Suppresses the SDK's default console.error
+    onError: () => { },
+  });
   for await (const part of result.fullStream) {
     switch (part.type) {
       case "text-delta":
@@ -47,6 +50,8 @@ async function* streamChunks(
       case "finish":
         yield { type: "finish", reason: toFinishReason(part.finishReason) };
         break;
+      case "error":
+        throw toError(part.error);
       default:
         break;
     }
