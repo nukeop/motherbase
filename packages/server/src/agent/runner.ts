@@ -1,7 +1,8 @@
 import { getLogger } from "@logtape/logtape";
+import type { MachineState } from "@motherbase/core";
 import {
   type AgentEvent,
-  type MachineState,
+  type ErrorEntry,
   type MessageEntry,
   projectForModel,
 } from "@motherbase/core";
@@ -22,7 +23,7 @@ export class Runner {
   constructor(
     private readonly sessionId: string,
     private readonly deps: Deps,
-  ) {}
+  ) { }
 
   get state(): MachineState {
     return this.#state;
@@ -32,20 +33,38 @@ export class Runner {
     appendEntry(this.sessionId, message);
     const draft = new MessageDraft();
     const history = getHistory(this.sessionId);
-    const chunks = this.deps.model.stream(projectForModel(history));
-    for await (const chunk of chunks) {
-      if (chunk.type === "finish") {
-        continue;
+
+    try {
+      const chunks = this.deps.model.stream(projectForModel(history));
+      for await (const chunk of chunks) {
+        if (chunk.type === "finish") {
+          continue;
+        }
+        draft.push(chunk);
+        this.deps.emit({
+          type: "message-in-progress",
+          parts: draft.parts.map((part) => ({ ...part })),
+        });
       }
-      draft.push(chunk);
-      this.deps.emit({
-        type: "message-in-progress",
-        parts: draft.parts.map((part) => ({ ...part })),
-      });
+      const reply = draft.complete();
+      appendEntry(this.sessionId, reply);
+      this.deps.emit({ type: "message-completed", message: reply });
+    } catch (err) {
+      logger.error`Model stream error: ${err}`;
+
+      if (draft.parts.length > 0) {
+        appendEntry(this.sessionId, draft.complete());
+      }
+
+      const error: ErrorEntry = {
+        kind: "error",
+        origin: "provider",
+        message: err instanceof Error ? err.message : String(err),
+      };
+      appendEntry(this.sessionId, error);
+      this.deps.emit({ type: "error", error });
     }
-    const reply = draft.complete();
-    appendEntry(this.sessionId, reply);
-    this.deps.emit({ type: "message-completed", message: reply });
+
     this.deps.emit({ type: "turn-completed" });
   }
 }

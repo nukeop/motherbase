@@ -1,13 +1,16 @@
 import { z } from "zod";
-import { messageEntrySchema } from "./history";
 
-export const machineStateSchema = z.discriminatedUnion("type", [
-  z.object({ type: z.literal("idle") }),
-  z.object({
-    type: z.literal("preparing-context"),
-    message: messageEntrySchema,
-  }),
-  z.object({ type: z.literal("generating") }),
+export const stateSchema = z.enum([
+  "idle",
+  "message-received",
+  "preparing-context",
+  "streaming",
+  "completing",
+  "error",
 ]);
+
+export type State = z.infer<typeof stateSchema>;
+
+export const machineStateSchema = z.object({ type: stateSchema });
 
 export type MachineState = z.infer<typeof machineStateSchema>;
