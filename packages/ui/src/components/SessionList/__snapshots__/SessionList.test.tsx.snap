@@ -2,7 +2,7 @@
 
 exports[`SessionList renders a list of sessions 1`] = `
 "<div>
-  <nav class="flex flex-col overflow-y-auto">
+  <nav data-testid="session-list" class="flex flex-col overflow-y-auto">
     <button type="button" class="border-l-2 px-3 py-2 text-left font-nav text-xs uppercase tracking-widest transition-colors cursor-pointer border-transparent text-cream/60 hover:bg-cream/5 hover:text-cream">
       The Ultimate Hamburger
     </button>
@@ -18,7 +18,7 @@ exports[`SessionList renders a list of sessions 1`] = `
 
 exports[`SessionList renders with a selected session 1`] = `
 "<div>
-  <nav class="flex flex-col overflow-y-auto">
+  <nav data-testid="session-list" class="flex flex-col overflow-y-auto">
     <button type="button" class="border-l-2 px-3 py-2 text-left font-nav text-xs uppercase tracking-widest transition-colors cursor-pointer border-transparent text-cream/60 hover:bg-cream/5 hover:text-cream">
       The Ultimate Hamburger
     </button>
@@ -34,7 +34,7 @@ exports[`SessionList renders with a selected session 1`] = `
 
 exports[`SessionList renders empty state 1`] = `
 "<div>
-  <nav class="flex flex-col overflow-y-auto">
+  <nav data-testid="session-list" class="flex flex-col overflow-y-auto">
   </nav>
 </div>"
 `;
