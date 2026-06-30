@@ -23,9 +23,19 @@ export const useSessions = () => {
     },
   });
 
+  const deleteSession = useMutation({
+    mutationFn: async (id: string) => {
+      await client.sessions[":id"].$delete({ param: { id } });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: sessionsKey });
+    },
+  });
+
   return {
     sessions: query.data ?? [],
     createSession: createSession.mutate,
+    deleteSession: deleteSession.mutate,
     isLoading: query.isLoading,
   };
 };

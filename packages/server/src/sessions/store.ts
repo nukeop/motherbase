@@ -30,6 +30,9 @@ export const createSession = (params: CreateSessionParams) => {
 export const getSession = (id: string) =>
   db.select().from(session).where(eq(session.id, id)).get();
 
+export const deleteSession = (id: string) =>
+  db.delete(session).where(eq(session.id, id)).run();
+
 export const listSessions = () =>
   db.select().from(session).orderBy(desc(session.createdAt)).all();
 

@@ -1,1 +1,2 @@
-export { SessionList, type SessionListItem } from "./SessionList";
+export { SessionList } from "./SessionList";
+export type { SessionListItem } from "./types";

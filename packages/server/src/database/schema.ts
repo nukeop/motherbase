@@ -20,7 +20,7 @@ export const entry = sqliteTable(
     id: text("id").primaryKey(),
     sessionId: text("session_id")
       .notNull()
-      .references(() => session.id),
+      .references(() => session.id, { onDelete: "cascade" }),
     seq: integer("seq").notNull(),
     kind: text("kind", { enum: ["message", "error"] }).notNull(),
     role: text("role", { enum: ["user", "assistant"] }),

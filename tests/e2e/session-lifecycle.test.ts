@@ -47,3 +47,16 @@ test("user sends a message and sees the streamed response", async ({
   await expect(page.getByText("Hello Motherbase")).toBeVisible();
   await expect(page.getByText("Hello from Motherbase")).toBeVisible();
 });
+
+test("user deletes a session from the sidebar", async ({ page }) => {
+  const sessionId = page.url().split("/sessions/")[1];
+  const sessionItem = page.getByTestId(`session-${sessionId}`);
+
+  await expect(sessionItem).toBeVisible();
+  await sessionItem.getByTestId("delete-session").click();
+
+  await expect(sessionItem).not.toBeVisible();
+  await expect(page).toHaveURL("/");
+});
+
+

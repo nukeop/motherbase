@@ -8,6 +8,7 @@ import { getProvider } from "../providers";
 import { readConfig } from "../providers/config";
 import {
   createSession,
+  deleteSession,
   getHistory,
   listSessions,
   updateSession,
@@ -38,6 +39,10 @@ export const sessionsApi = new Hono()
     const messages = getHistory(session.id);
 
     return ctx.json({ ...session, messages });
+  })
+  .delete("/:id", requireSession, (ctx) => {
+    deleteSession(ctx.var.session.id);
+    return ctx.body(null, 204);
   })
   .patch(
     "/:id",
