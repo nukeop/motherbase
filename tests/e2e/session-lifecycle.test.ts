@@ -14,6 +14,7 @@ const TEST_PROVIDER = {
 };
 
 const RESPONSE_CHUNKS = [
+  { type: "text-start" },
   { type: "text-delta", text: "Hello" },
   { type: "text-delta", text: " from" },
   { type: "text-delta", text: " Motherbase" },

@@ -1,10 +1,9 @@
 import type { LanguageModelV3StreamPart } from "@ai-sdk/provider";
-import { simulateReadableStream } from "ai";
 import { MockLanguageModelV3 } from "ai/test";
 import type { ModelChunk } from "../../src/agent/model-chunk";
 
 type BlockKind = "text" | "reasoning";
-type CurrentBlock = {
+type OpenBlock = {
   kind: BlockKind;
   id: string;
 };
@@ -13,47 +12,55 @@ export const toStreamParts = (
   chunks: ModelChunk[],
 ): LanguageModelV3StreamPart[] => {
   const parts: LanguageModelV3StreamPart[] = [];
-  let openBlock: CurrentBlock | null = null;
+  let openBlock: OpenBlock | null = null;
 
-  const closeBlock = () => {
-    parts.push({ type: `${openBlock!.kind}-end`, id: openBlock!.id });
-    openBlock = null;
+  const close = () => {
+    if (openBlock !== null) {
+      parts.push({ type: `${openBlock.kind}-end`, id: openBlock.id });
+      openBlock = null;
+    }
   };
 
-  const openBlockFor = (kind: BlockKind) => {
-    if (openBlock && openBlock.kind !== kind) {
-      // This means we're transitioning from reasoning to talking or vice versa
-      closeBlock();
-    }
-
-    if (openBlock) {
-      // This means we're processing the next chunk of the same block
-      return openBlock;
-    }
-
+  const open = (kind: BlockKind) => {
+    close();
     openBlock = { kind, id: crypto.randomUUID() };
     parts.push({ type: `${kind}-start`, id: openBlock.id });
-    return openBlock;
   };
 
-  chunks.forEach((chunk) => {
+  const delta = (kind: BlockKind, text: string) => {
+    if (openBlock === null || openBlock.kind !== kind) {
+      throw new Error(
+        `Scripted a ${kind} delta without opening a ${kind} block first`,
+      );
+    }
+    parts.push({ type: `${kind}-delta`, id: openBlock.id, delta: text });
+  };
+
+  for (const chunk of chunks) {
     switch (chunk.type) {
+      case "text-start":
+        open("text");
+        break;
       case "text-delta":
-        parts.push({
-          type: "text-delta",
-          id: openBlockFor("text").id,
-          delta: chunk.text,
-        });
+        delta("text", chunk.text);
+        break;
+      case "reasoning-start":
+        open("reasoning");
         break;
       case "reasoning-delta":
+        delta("reasoning", chunk.text);
+        break;
+      case "tool-call":
+        close();
         parts.push({
-          type: "reasoning-delta",
-          id: openBlockFor("reasoning").id,
-          delta: chunk.text,
+          type: "tool-call",
+          toolCallId: chunk.toolCallId,
+          toolName: chunk.toolName,
+          input: JSON.stringify(chunk.input),
         });
         break;
       case "finish":
-        closeBlock();
+        close();
         // TODO: Allow setting usage
         parts.push({
           type: "finish",
@@ -65,7 +72,7 @@ export const toStreamParts = (
         });
         break;
     }
-  });
+  }
   return parts;
 };
 

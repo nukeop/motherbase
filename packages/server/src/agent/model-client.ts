@@ -41,8 +41,14 @@ async function* streamChunks(
   });
   for await (const part of result.fullStream) {
     switch (part.type) {
+      case "text-start":
+        yield { type: "text-start" };
+        break;
       case "text-delta":
         yield { type: "text-delta", text: part.text };
+        break;
+      case "reasoning-start":
+        yield { type: "reasoning-start" };
         break;
       case "reasoning-delta":
         yield { type: "reasoning-delta", text: part.text };
