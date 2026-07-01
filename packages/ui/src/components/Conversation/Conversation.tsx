@@ -14,9 +14,14 @@ export const Conversation = ({ children }: ConversationProps) => {
       ref={containerRef}
       onWheel={handleWheel}
       onScroll={handleScroll}
-      className="flex flex-1 flex-col gap-2 overflow-y-auto bg-cream-dark p-2"
+      className="flex-1 overflow-y-auto bg-cream"
     >
-      <div ref={contentRef}>{children}</div>
+      <div
+        ref={contentRef}
+        className="mx-auto flex max-w-3xl flex-col gap-4 px-6 py-8"
+      >
+        {children}
+      </div>
     </div>
   );
 };

@@ -24,7 +24,7 @@ export const PromptInput = ({
   onSubmit,
 }: PromptInputProps) => {
   return (
-    <div className="flex flex-col bg-ink shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]">
+    <div className="mx-auto mb-4 flex w-full max-w-4xl flex-col rounded-xl [corner-shape:squircle] bg-ink shadow-lg">
       <MessageInput onSubmit={onSubmit} />
       <div className="flex items-center gap-2 border-t border-orange/20 px-3 py-1.5">
         <Select

@@ -28,7 +28,7 @@ export const MessageInput = ({ onSubmit }: MessageInputProps) => {
       value={text}
       onChange={(event) => setText(event.target.value)}
       onKeyDown={handleKeyDown}
-      className="w-full resize-none bg-transparent px-4 py-3 font-body text-sm text-cream shadow-[inset_0_2px_4px_rgba(0,0,0,0.3)] placeholder:text-cream/30 outline-none"
+      className="w-full resize-none bg-transparent px-4 py-3 font-body text-sm text-cream placeholder:text-cream/30 outline-none"
     />
   );
 };

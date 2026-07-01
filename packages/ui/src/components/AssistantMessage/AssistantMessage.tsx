@@ -11,11 +11,11 @@ type AssistantMessageProps = {
 
 export const AssistantMessage = ({ parts }: AssistantMessageProps) => {
   return (
-    <div className="border-r-2 border-orange bg-cream px-4 py-3 font-body text-sm text-ink">
+    <div className="flex flex-col gap-4 font-body text-sm text-ink">
       {parts.map((part, index) => {
         const key = `${part.type}-${index}`;
         if (part.type === "reasoning") {
-          return <ReasoningPart key={key} text={part.text} />;
+          return <ReasoningPart key={key} text={part.text} isLast={index === parts.length - 1} />;
         }
         return <TextPart key={key} text={part.text} />;
       })}

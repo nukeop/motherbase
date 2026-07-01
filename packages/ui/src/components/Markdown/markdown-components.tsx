@@ -37,7 +37,7 @@ export const components: Components = {
   ),
 
   p: ({ children }) => (
-    <p className="font-body text-base leading-relaxed text-ink">{children}</p>
+    <p className="font-body leading-relaxed text-ink">{children}</p>
   ),
 
   a: ({ children, href }) => (
@@ -53,13 +53,13 @@ export const components: Components = {
   ),
 
   ul: ({ children }) => (
-    <ul className="flex flex-col gap-2.5 font-body text-base text-ink [&>li]:grid [&>li]:grid-cols-[auto_1fr] [&>li]:gap-x-3 [&>li]:gap-y-1 [&>li]:items-baseline [&>li>*]:col-start-2 [&>li]:before:content-[''] [&>li]:before:size-1.5 [&>li]:before:bg-steel [&>li]:before:translate-y-px [&>li]:before:block">
+    <ul className="flex flex-col gap-2.5 font-body text-ink [&>li]:grid [&>li]:grid-cols-[auto_1fr] [&>li]:gap-x-3 [&>li]:gap-y-1 [&>li]:items-baseline [&>li>*]:col-start-2 [&>li]:before:content-[''] [&>li]:before:size-1.5 [&>li]:before:bg-steel [&>li]:before:translate-y-px [&>li]:before:block">
       {children}
     </ul>
   ),
 
   ol: ({ children }) => (
-    <ol className="flex flex-col gap-3 font-body text-base text-ink [counter-reset:item] [&>li]:grid [&>li]:grid-cols-[auto_1fr] [&>li]:gap-x-3.5 [&>li]:gap-y-1 [&>li]:items-baseline [&>li>*]:col-start-2 [&>li]:before:content-[counter(item,decimal-leading-zero)] [&>li]:before:font-mono [&>li]:before:text-sm [&>li]:before:font-semibold [&>li]:before:text-blue [&>li]:[counter-increment:item]">
+    <ol className="flex flex-col gap-3 font-body text-ink [counter-reset:item] [&>li]:grid [&>li]:grid-cols-[auto_1fr] [&>li]:gap-x-3.5 [&>li]:gap-y-1 [&>li]:items-baseline [&>li>*]:col-start-2 [&>li]:before:content-[counter(item,decimal-leading-zero)] [&>li]:before:font-mono [&>li]:before:text-sm [&>li]:before:font-semibold [&>li]:before:text-blue [&>li]:[counter-increment:item]">
       {children}
     </ol>
   ),
@@ -83,14 +83,14 @@ export const components: Components = {
       );
     }
     return (
-      <code className="font-mono text-sm bg-steel/5 border border-steel/15 px-1.5 py-px rounded-sm text-gunmetal">
+      <code className="font-mono text-sm bg-steel/5 border border-steel/15 px-1.5 py-px rounded-sm [corner-shape:squircle] text-gunmetal">
         {children}
       </code>
     );
   },
 
   pre: ({ children }) => (
-    <pre className="whitespace-pre-wrap wrap-break-word rounded bg-gunmetal px-4 py-3 font-mono text-xs text-cream [&_code]:border-0 [&_code]:bg-transparent [&_code]:p-0">
+    <pre className="whitespace-pre-wrap wrap-break-word rounded-xl [corner-shape:squircle] bg-gunmetal px-4 py-3 font-mono text-xs text-cream [&_code]:border-0 [&_code]:bg-transparent [&_code]:p-0">
       {children}
     </pre>
   ),
