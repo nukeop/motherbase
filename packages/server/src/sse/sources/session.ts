@@ -3,7 +3,8 @@ import type { StreamSource, WriteEvent } from "../types";
 
 const writers = new Map<string, WriteEvent>();
 
-export const sessionSource = (sessionId: string): StreamSource =>
+export const sessionSource =
+  (sessionId: string): StreamSource =>
   (write) => {
     writers.set(sessionId, write);
     return () => {

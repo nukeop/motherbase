@@ -8,19 +8,21 @@ export type WithSession = {
   };
 };
 
-export const requireSession = createMiddleware<WithSession>(async (ctx, next) => {
-  const id = ctx.req.param("id");
+export const requireSession = createMiddleware<WithSession>(
+  async (ctx, next) => {
+    const id = ctx.req.param("id");
 
-  if (!id) {
-    return ctx.json({ error: "Missing session ID" }, 400);
-  }
+    if (!id) {
+      return ctx.json({ error: "Missing session ID" }, 400);
+    }
 
-  const session = getSession(id);
+    const session = getSession(id);
 
-  if (!session) {
-    return ctx.json({ error: "Session not found" }, 404);
-  }
+    if (!session) {
+      return ctx.json({ error: "Session not found" }, 404);
+    }
 
-  ctx.set("session", session);
-  await next();
-});
+    ctx.set("session", session);
+    await next();
+  },
+);

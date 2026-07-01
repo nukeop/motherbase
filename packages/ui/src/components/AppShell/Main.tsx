@@ -7,7 +7,9 @@ type MainProps = {
 };
 
 export const Main: FC<MainProps> = ({ children, className }) => (
-  <main className={cn("flex flex-1 flex-col min-w-0 overflow-hidden", className)}>
+  <main
+    className={cn("flex flex-1 flex-col min-w-0 overflow-hidden", className)}
+  >
     {children}
   </main>
 );

@@ -34,22 +34,14 @@ export const testApi = new Hono()
       return ctx.json({ ok: true });
     },
   )
-  .post(
-    "/model",
-    zValidator("json", testScriptSchema),
-    (ctx) => {
-      const { provider, model, chunks, error } = ctx.req.valid("json");
-      scripts.set(provider, model, { chunks, error });
-      return ctx.json({ ok: true });
-    },
-  )
-  .post(
-    "/config",
-    zValidator("json", configSchema),
-    (ctx) => {
-      installFileMock();
-      const config = ctx.req.valid("json");
-      mockFile(configPath, JSON.stringify(config));
-      return ctx.json({ ok: true });
-    },
-  );
+  .post("/model", zValidator("json", testScriptSchema), (ctx) => {
+    const { provider, model, chunks, error } = ctx.req.valid("json");
+    scripts.set(provider, model, { chunks, error });
+    return ctx.json({ ok: true });
+  })
+  .post("/config", zValidator("json", configSchema), (ctx) => {
+    installFileMock();
+    const config = ctx.req.valid("json");
+    mockFile(configPath, JSON.stringify(config));
+    return ctx.json({ ok: true });
+  });

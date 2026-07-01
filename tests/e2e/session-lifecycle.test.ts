@@ -58,5 +58,3 @@ test("user deletes a session from the sidebar", async ({ page }) => {
   await expect(sessionItem).not.toBeVisible();
   await expect(page).toHaveURL("/");
 });
-
-

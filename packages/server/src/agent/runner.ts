@@ -56,7 +56,10 @@ export class Runner {
     this.deps.emit({ type: "turn-completed" });
   }
 
-  private async run(state: MachineState & { type: HandlerState }, ctx: RunContext): Promise<void> {
+  private async run(
+    state: MachineState & { type: HandlerState },
+    ctx: RunContext,
+  ): Promise<void> {
     this.#state = state;
     const next = await handlers[state.type](ctx);
 

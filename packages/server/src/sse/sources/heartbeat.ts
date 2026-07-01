@@ -7,7 +7,8 @@ const payload = () => ({
   uptime: Math.floor((Date.now() - startedAt) / 1000),
 });
 
-export const heartbeat = (intervalMs: number): StreamSource =>
+export const heartbeat =
+  (intervalMs: number): StreamSource =>
   (write) => {
     const interval = setInterval(async () => {
       try {

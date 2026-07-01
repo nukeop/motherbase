@@ -13,7 +13,7 @@ type Story = StoryObj<typeof SessionList>;
 const sessions = [
   { id: "1", title: "The Ultimate Hamburger" },
   { id: "2", title: "Skull Face's Objective" },
-  { id: "3", title: "Code Talker and His Research" }
+  { id: "3", title: "Code Talker and His Research" },
 ];
 
 export const Default: Story = {
@@ -34,7 +34,7 @@ export const Default: Story = {
 export const Empty: Story = {
   render: () => (
     <div className="w-64 bg-gunmetal">
-      <SessionList sessions={[]} onSelect={() => { }} />
+      <SessionList sessions={[]} onSelect={() => {}} />
     </div>
   ),
 };
@@ -45,7 +45,7 @@ export const SingleSession: Story = {
       <SessionList
         sessions={[{ id: "1", title: "New Session" }]}
         selectedId="1"
-        onSelect={() => { }}
+        onSelect={() => {}}
       />
     </div>
   ),

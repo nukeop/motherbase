@@ -42,9 +42,7 @@ test("selecting a model updates the input value", async ({ page }) => {
   await selectProvider(page, "Selection Provider");
 
   await page.getByPlaceholder("Search models...").click();
-  await page
-    .getByRole("option", { name: /Selection Model Alpha/ })
-    .click();
+  await page.getByRole("option", { name: /Selection Model Alpha/ }).click();
 
   await expect(page.getByPlaceholder("Search models...")).toHaveValue(
     "Selection Model Alpha",

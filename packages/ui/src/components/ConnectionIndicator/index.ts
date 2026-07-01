@@ -1,1 +1,4 @@
-export { ConnectionIndicator, type ConnectionStatus } from "./ConnectionIndicator";
+export {
+  ConnectionIndicator,
+  type ConnectionStatus,
+} from "./ConnectionIndicator";

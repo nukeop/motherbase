@@ -9,7 +9,9 @@ export type ModelData = {
 
 export const ModelOption = ({
   item,
-}: { item: ComboBoxItem<string, ModelData> }) => {
+}: {
+  item: ComboBoxItem<string, ModelData>;
+}) => {
   const pricing =
     item.data !== undefined
       ? `${formatPrice(item.data.inputPrice)} / ${formatPrice(item.data.outputPrice)} · ${formatContext(item.data.contextLength)}`

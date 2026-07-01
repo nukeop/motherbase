@@ -4,11 +4,7 @@ import type { ModelChunk } from "../../src/agent/model-chunk";
 import { createModelClient } from "../../src/agent/model-client";
 import { Runner } from "../../src/agent/runner";
 import { createSession, getHistory } from "../../src/sessions/store";
-import {
-  createMockModel,
-  createStream,
-  toStreamParts,
-} from "./mock-model";
+import { createMockModel, createStream, toStreamParts } from "./mock-model";
 
 export class Scenario {
   readonly session = createSession({
@@ -35,8 +31,7 @@ export class Scenario {
 
   scriptError(chunks: ModelChunk[], errorMessage: string): void {
     const parts = toStreamParts(chunks);
-    this.#streamFactory = () =>
-      createStream(parts, new Error(errorMessage));
+    this.#streamFactory = () => createStream(parts, new Error(errorMessage));
   }
 
   async sendMessage(text: string): Promise<void> {

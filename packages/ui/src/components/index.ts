@@ -1,7 +1,10 @@
 export { AppShell } from "./AppShell";
 export { AssistantMessage } from "./AssistantMessage";
 export { ComboBox, type ComboBoxItem } from "./ComboBox";
-export { ConnectionIndicator, type ConnectionStatus } from "./ConnectionIndicator";
+export {
+  ConnectionIndicator,
+  type ConnectionStatus,
+} from "./ConnectionIndicator";
 export { Conversation } from "./Conversation";
 export { ErrorMessage } from "./ErrorMessage";
 export { Markdown } from "./Markdown";

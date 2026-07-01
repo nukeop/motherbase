@@ -7,8 +7,7 @@ type ModelScript = {
   error?: string;
 };
 
-const key = (providerId: string, modelId: string) =>
-  `${providerId}:${modelId}`;
+const key = (providerId: string, modelId: string) => `${providerId}:${modelId}`;
 
 export class TestScripts {
   #scripts = new Map<string, ModelScript>();
@@ -23,9 +22,7 @@ export class TestScripts {
   ): ReadableStream<LanguageModelV3StreamPart> {
     const script = this.#scripts.get(key(providerId, modelId));
     if (!script) {
-      throw new Error(
-        `No script registered for ${providerId}:${modelId}`,
-      );
+      throw new Error(`No script registered for ${providerId}:${modelId}`);
     }
     const parts = toStreamParts(script.chunks);
     const error = script.error ? new Error(script.error) : undefined;

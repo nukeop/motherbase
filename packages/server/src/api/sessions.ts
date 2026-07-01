@@ -90,7 +90,8 @@ export const sessionsApi = new Hono()
   .get("/:id/events", requireSession, (ctx) => {
     const session = ctx.var.session;
 
-    return streamSSE(ctx, (stream) =>
-      new EventStream(stream, [sessionSource(session.id)]).done,
+    return streamSSE(
+      ctx,
+      (stream) => new EventStream(stream, [sessionSource(session.id)]).done,
     );
   });

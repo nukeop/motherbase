@@ -23,8 +23,14 @@ describe("text reply turn", () => {
 
     expect(scenario.events).toEqual([
       { type: "message-in-progress", parts: [{ type: "text", text: "Hi" }] },
-      { type: "message-in-progress", parts: [{ type: "text", text: "Hi there" }] },
-      { type: "message-in-progress", parts: [{ type: "text", text: "Hi there!" }] },
+      {
+        type: "message-in-progress",
+        parts: [{ type: "text", text: "Hi there" }],
+      },
+      {
+        type: "message-in-progress",
+        parts: [{ type: "text", text: "Hi there!" }],
+      },
       { type: "message-completed", message: assistantMessage },
       { type: "turn-completed" },
     ]);
@@ -67,10 +73,39 @@ describe("text reply turn", () => {
     };
 
     expect(scenario.events).toEqual([
-      { type: "message-in-progress", parts: [{ type: "reasoning", text: "The user greeted me. " }] },
-      { type: "message-in-progress", parts: [{ type: "reasoning", text: "The user greeted me. I should greet back." }] },
-      { type: "message-in-progress", parts: [{ type: "reasoning", text: "The user greeted me. I should greet back." }, { type: "text", text: "Hey" }] },
-      { type: "message-in-progress", parts: [{ type: "reasoning", text: "The user greeted me. I should greet back." }, { type: "text", text: "Hey!" }] },
+      {
+        type: "message-in-progress",
+        parts: [{ type: "reasoning", text: "The user greeted me. " }],
+      },
+      {
+        type: "message-in-progress",
+        parts: [
+          {
+            type: "reasoning",
+            text: "The user greeted me. I should greet back.",
+          },
+        ],
+      },
+      {
+        type: "message-in-progress",
+        parts: [
+          {
+            type: "reasoning",
+            text: "The user greeted me. I should greet back.",
+          },
+          { type: "text", text: "Hey" },
+        ],
+      },
+      {
+        type: "message-in-progress",
+        parts: [
+          {
+            type: "reasoning",
+            text: "The user greeted me. I should greet back.",
+          },
+          { type: "text", text: "Hey!" },
+        ],
+      },
       { type: "message-completed", message: assistantMessage },
       { type: "turn-completed" },
     ]);

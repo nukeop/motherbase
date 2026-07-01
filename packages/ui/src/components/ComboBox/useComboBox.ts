@@ -26,12 +26,12 @@ export const useComboBox = <T extends string, D = undefined>(
 
   const filtered = query
     ? options.filter((option) => {
-      const lowercaseQuery = query.toLowerCase();
-      return (
-        option.label.toLowerCase().includes(lowercaseQuery) ||
-        option.value.toLowerCase().includes(lowercaseQuery)
-      );
-    })
+        const lowercaseQuery = query.toLowerCase();
+        return (
+          option.label.toLowerCase().includes(lowercaseQuery) ||
+          option.value.toLowerCase().includes(lowercaseQuery)
+        );
+      })
     : options;
 
   const selected = options.find((option) => option.value === value);

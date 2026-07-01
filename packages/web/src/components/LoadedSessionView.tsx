@@ -8,6 +8,14 @@ import {
 } from "@motherbase/ui";
 import { useModelSelection } from "../hooks/useModelSelection";
 
+const userMessageText = (parts: MessagePart[]): string => {
+  const textPart = parts.find((part) => part.type === "text");
+  if (textPart === undefined) {
+    return "";
+  }
+  return textPart.text;
+};
+
 type LoadedSessionViewProps = {
   sessionId: string;
   providerId: string;
@@ -35,9 +43,15 @@ export const LoadedSessionView = ({
             const key = `error-${index}`;
             return <ErrorMessage key={key} message={entry.message} />;
           }
+          if (entry.kind === "tool-result") {
+            // Rendered once the tool result block component exists.
+            return null;
+          }
           const key = `${entry.role}-${index}`;
           if (entry.role === "user") {
-            return <UserMessage key={key} text={entry.parts[0]!.text} />;
+            return (
+              <UserMessage key={key} text={userMessageText(entry.parts)} />
+            );
           }
           return <AssistantMessage key={key} parts={entry.parts} />;
         })}

@@ -37,7 +37,7 @@ async function* streamChunks(
     model,
     messages: messages.map(toModelMessage),
     // Suppresses the SDK's default console.error
-    onError: () => { },
+    onError: () => {},
   });
   for await (const part of result.fullStream) {
     switch (part.type) {

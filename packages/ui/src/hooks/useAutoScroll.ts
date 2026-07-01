@@ -25,8 +25,7 @@ export const useAutoScroll = () => {
     if (!el) {
       return;
     }
-    const distanceFromBottom =
-      el.scrollHeight - el.scrollTop - el.clientHeight;
+    const distanceFromBottom = el.scrollHeight - el.scrollTop - el.clientHeight;
     if (distanceFromBottom < BOTTOM_THRESHOLD) {
       userScrolled.current = false;
     }

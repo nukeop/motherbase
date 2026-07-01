@@ -1,4 +1,8 @@
-import { type HistoryEntry, type MessageRole, historyEntrySchema } from "@motherbase/core";
+import {
+  type HistoryEntry,
+  historyEntrySchema,
+  type MessageRole,
+} from "@motherbase/core";
 import { desc, eq, sql } from "drizzle-orm";
 import { db } from "../database";
 import { entry, session } from "../database/schema";
@@ -42,12 +46,7 @@ type UpdateSessionParams = {
 };
 
 export const updateSession = (id: string, params: UpdateSessionParams) =>
-  db
-    .update(session)
-    .set(params)
-    .where(eq(session.id, id))
-    .returning()
-    .get();
+  db.update(session).set(params).where(eq(session.id, id)).returning().get();
 
 const roleForEntry = (historyEntry: HistoryEntry): MessageRole | null =>
   historyEntry.kind === "message" ? historyEntry.role : null;
