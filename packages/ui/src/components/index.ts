@@ -8,5 +8,5 @@ export { Markdown } from "./Markdown";
 export { type ModelData, PromptInput } from "./PromptInput";
 export { Select, type SelectItem } from "./Select";
 export { SessionList, type SessionListItem } from "./SessionList";
-export { UserMessage } from "./UserMessage";
+export { CornerAccent, UserMessage } from "./UserMessage";
 export { Workspace } from "./Workspace";
