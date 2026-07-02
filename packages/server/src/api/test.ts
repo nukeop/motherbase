@@ -4,10 +4,16 @@ import { z } from "zod";
 import { installFileMock, mockFile } from "../../tests/helpers/mock-files";
 import { createMockModel } from "../../tests/helpers/mock-model";
 import { TestScripts } from "../../tests/helpers/test-scripts";
+import { toToolDefinition } from "../../tests/helpers/test-tools";
+import { registerTool } from "../agent/tools/registry";
 import { configPath } from "../paths";
 import { registerProvider } from "../providers";
 import { configSchema } from "../providers/config";
-import { testProviderSchema, testScriptSchema } from "./test-schemas";
+import {
+  testProviderSchema,
+  testScriptSchema,
+  testToolSchema,
+} from "./test-schemas";
 
 const scripts = new TestScripts();
 
@@ -39,6 +45,17 @@ export const testApi = new Hono()
     scripts.enqueue(provider, model, { chunks, error });
     return ctx.json({ ok: true });
   })
+  .post(
+    "/tools",
+    zValidator("json", z.object({ tools: z.array(testToolSchema) })),
+    (ctx) => {
+      const { tools } = ctx.req.valid("json");
+      for (const tool of tools) {
+        registerTool(toToolDefinition(tool));
+      }
+      return ctx.json({ ok: true });
+    },
+  )
   .post("/config", zValidator("json", configSchema), (ctx) => {
     installFileMock();
     const config = ctx.req.valid("json");
