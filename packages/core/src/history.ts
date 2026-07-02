@@ -53,6 +53,11 @@ export type ToolOutcome = z.infer<typeof toolOutcomeSchema>;
 export type ToolResultEntry = z.infer<typeof toolResultEntrySchema>;
 export type HistoryEntry = z.infer<typeof historyEntrySchema>;
 
+export type ModelEntry = MessageEntry | ToolResultEntry;
+
 export const projectForModel = (
   history: readonly HistoryEntry[],
-): MessageEntry[] => history.filter((entry) => entry.kind === "message");
+): ModelEntry[] =>
+  history.filter(
+    (entry) => entry.kind === "message" || entry.kind === "tool-result",
+  );

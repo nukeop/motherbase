@@ -3,7 +3,7 @@ import type { StateHandler } from "../types";
 
 export const streaming: StateHandler = async (ctx) => {
   try {
-    const chunks = ctx.model.stream(ctx.messages);
+    const chunks = ctx.model.stream(ctx.modelContext, []);
     for await (const chunk of chunks) {
       if (chunk.type === "finish") {
         continue;

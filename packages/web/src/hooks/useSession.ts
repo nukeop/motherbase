@@ -5,10 +5,7 @@ import { BASE_URL, client } from "../api/client";
 
 import { sessionKey } from "./query-keys";
 
-// The session payload is typed by hand instead of inferred from the Hono
-// client: `HistoryEntry` is recursive (tool-call input is arbitrary JSON), and
-// pushing a recursive type through Hono's RPC response transform makes
-// TypeScript give up with TS2589 (excessively deep instantiation).
+// Typed by hand: Hono RPC inference hits TS2589 on the recursive HistoryEntry.
 type SessionResponse = {
   providerId: string;
   modelId: string;

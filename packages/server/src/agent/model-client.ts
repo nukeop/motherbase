@@ -1,41 +1,43 @@
-import type { MessageEntry } from "@motherbase/core";
-import { toError } from "@motherbase/core";
-import { type LanguageModel, type ModelMessage, streamText } from "ai";
-import type { FinishReason, ModelChunk } from "./model-chunk";
+import type { ModelEntry } from "@motherbase/core";
+import { jsonValueSchema, toError } from "@motherbase/core";
+import { type LanguageModel, streamText } from "ai";
+import {
+  type FinishReason,
+  finishReasonSchema,
+  type ModelChunk,
+} from "./model-chunk";
+import { toModelMessages } from "./model-messages";
+import { toSdkTools } from "./model-tools";
+import type { ToolDefinition } from "./tools/definition";
 
 export type ModelClient = {
-  stream: (messages: readonly MessageEntry[]) => AsyncIterable<ModelChunk>;
+  stream: (
+    entries: readonly ModelEntry[],
+    tools: readonly ToolDefinition[],
+  ) => AsyncIterable<ModelChunk>;
 };
 
 export const createModelClient = (model: LanguageModel): ModelClient => ({
-  stream: (messages) => streamChunks(model, messages),
+  stream: (entries, tools) => streamChunks(model, entries, tools),
 });
 
-const toModelMessage = (message: MessageEntry): ModelMessage => {
-  if (message.role === "user") {
-    const text = message.parts
-      .filter((part) => part.type === "text")
-      .map((part) => part.text)
-      .join("");
-    return { role: "user", content: text };
-  }
-  return { role: "assistant", content: message.parts };
-};
-
 const toFinishReason = (reason: string): FinishReason => {
-  if (reason === "stop") {
-    return "stop";
+  const parsed = finishReasonSchema.safeParse(reason);
+  if (!parsed.success) {
+    throw new Error(`Unsupported finish reason: ${reason}`);
   }
-  throw new Error(`Unsupported finish reason: ${reason}`);
+  return parsed.data;
 };
 
 async function* streamChunks(
   model: LanguageModel,
-  messages: readonly MessageEntry[],
+  entries: readonly ModelEntry[],
+  tools: readonly ToolDefinition[],
 ): AsyncIterable<ModelChunk> {
   const result = streamText({
     model,
-    messages: messages.map(toModelMessage),
+    messages: toModelMessages(entries),
+    tools: toSdkTools(tools),
     // Suppresses the SDK's default console.error
     onError: () => {},
   });
@@ -52,6 +54,14 @@ async function* streamChunks(
         break;
       case "reasoning-delta":
         yield { type: "reasoning-delta", text: part.text };
+        break;
+      case "tool-call":
+        yield {
+          type: "tool-call",
+          toolCallId: part.toolCallId,
+          toolName: part.toolName,
+          input: jsonValueSchema.parse(part.input),
+        };
         break;
       case "finish":
         yield { type: "finish", reason: toFinishReason(part.finishReason) };

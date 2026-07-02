@@ -41,13 +41,13 @@ export class Runner {
     return this.#state;
   }
 
-  async send(message: MessageEntry): Promise<void> {
+  async send(userMessage: MessageEntry): Promise<void> {
     const ctx: RunContext = {
       sessionId: this.sessionId,
       model: this.deps.model,
       emit: this.deps.emit,
-      message,
-      messages: [],
+      userMessage,
+      modelContext: [],
       draft: new MessageDraft(),
       error: null,
     };

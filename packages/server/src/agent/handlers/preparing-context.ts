@@ -4,6 +4,6 @@ import type { StateHandler } from "../types";
 
 export const preparingContext: StateHandler = async (ctx) => {
   const history = getHistory(ctx.sessionId);
-  ctx.messages = projectForModel(history);
+  ctx.modelContext = projectForModel(history);
   return { type: "streaming" };
 };
