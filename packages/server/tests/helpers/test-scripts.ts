@@ -10,17 +10,19 @@ type ModelScript = {
 const key = (providerId: string, modelId: string) => `${providerId}:${modelId}`;
 
 export class TestScripts {
-  #scripts = new Map<string, ModelScript>();
+  #scripts = new Map<string, ModelScript[]>();
 
-  set(providerId: string, modelId: string, script: ModelScript): void {
-    this.#scripts.set(key(providerId, modelId), script);
+  enqueue(providerId: string, modelId: string, script: ModelScript): void {
+    const queue = this.#scripts.get(key(providerId, modelId)) ?? [];
+    queue.push(script);
+    this.#scripts.set(key(providerId, modelId), queue);
   }
 
   buildStream(
     providerId: string,
     modelId: string,
   ): ReadableStream<LanguageModelV3StreamPart> {
-    const script = this.#scripts.get(key(providerId, modelId));
+    const script = this.#scripts.get(key(providerId, modelId))?.shift();
     if (!script) {
       throw new Error(`No script registered for ${providerId}:${modelId}`);
     }

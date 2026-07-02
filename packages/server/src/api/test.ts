@@ -27,7 +27,7 @@ export const testApi = new Hono()
           removeCredential: async () => {},
           listModels: async () => models,
           createModel: async (modelId) =>
-            createMockModel(scripts.buildStream(provider.id, modelId)),
+            createMockModel(() => scripts.buildStream(provider.id, modelId)),
         });
       }
 
@@ -36,7 +36,7 @@ export const testApi = new Hono()
   )
   .post("/model", zValidator("json", testScriptSchema), (ctx) => {
     const { provider, model, chunks, error } = ctx.req.valid("json");
-    scripts.set(provider, model, { chunks, error });
+    scripts.enqueue(provider, model, { chunks, error });
     return ctx.json({ ok: true });
   })
   .post("/config", zValidator("json", configSchema), (ctx) => {

@@ -94,8 +94,8 @@ export const createStream = (
   });
 
 export const createMockModel = (
-  stream: ReadableStream<LanguageModelV3StreamPart>,
+  nextStream: () => ReadableStream<LanguageModelV3StreamPart>,
 ) =>
   new MockLanguageModelV3({
-    doStream: async () => ({ stream }),
+    doStream: async () => ({ stream: nextStream() }),
   });
