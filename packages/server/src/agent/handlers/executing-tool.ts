@@ -15,7 +15,9 @@ const logger = getLogger(["Motherbase", "Agent", "ExecutingTool"]);
 
 export const executingTool: StateHandler = async (ctx) => {
   if (!ctx.reply) {
-    throw new Error("Reached executing-tool without a completed reply. This should never happen");
+    throw new Error(
+      "Reached executing-tool without a completed reply. This should never happen",
+    );
   }
 
   const calls = ctx.reply.parts.filter((part) => part.type === "tool-call");
