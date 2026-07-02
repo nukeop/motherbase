@@ -8,7 +8,7 @@ const logger = getLogger(["Motherbase", "Agent", "Error"]);
 export const error: StateHandler = async (ctx) => {
   logger.error`Model stream error: ${ctx.error}`;
 
-  if (ctx.draft.parts.length > 0) {
+  if (ctx.draft && ctx.draft.parts.length > 0) {
     appendEntry(ctx.sessionId, ctx.draft.complete());
   }
 

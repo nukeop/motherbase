@@ -1,15 +1,17 @@
 import { z } from "zod";
 import { jsonValueSchema } from "./json";
 
+export const toolCallPartSchema = z.object({
+  type: z.literal("tool-call"),
+  toolCallId: z.string(),
+  toolName: z.string(),
+  input: jsonValueSchema,
+});
+
 export const messagePartSchema = z.discriminatedUnion("type", [
   z.object({ type: z.literal("text"), text: z.string() }),
   z.object({ type: z.literal("reasoning"), text: z.string() }),
-  z.object({
-    type: z.literal("tool-call"),
-    toolCallId: z.string(),
-    toolName: z.string(),
-    input: jsonValueSchema,
-  }),
+  toolCallPartSchema,
 ]);
 
 export const messageRoleSchema = z.enum(["user", "assistant"]);
@@ -44,6 +46,7 @@ export const historyEntrySchema = z.discriminatedUnion("kind", [
   toolResultEntrySchema,
 ]);
 
+export type ToolCallPart = z.infer<typeof toolCallPartSchema>;
 export type MessagePart = z.infer<typeof messagePartSchema>;
 export type MessageRole = z.infer<typeof messageRoleSchema>;
 export type MessageEntry = z.infer<typeof messageEntrySchema>;

@@ -5,7 +5,9 @@ import type {
   ModelEntry,
 } from "@motherbase/core";
 import type { MessageDraft } from "./message-draft";
+import type { FinishReason } from "./model-chunk";
 import type { ModelClient } from "./model-client";
+import type { ToolDefinition } from "./tools/definition";
 
 export type StateHandler = (
   ctx: RunContext,
@@ -17,6 +19,9 @@ export type RunContext = {
   emit: (event: AgentEvent) => void;
   userMessage: MessageEntry;
   modelContext: ModelEntry[];
-  draft: MessageDraft;
+  tools: readonly ToolDefinition[];
+  draft: MessageDraft | null;
+  finishReason: FinishReason | null;
+  reply: MessageEntry | null;
   error: Error | null;
 };

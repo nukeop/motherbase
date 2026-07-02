@@ -4,6 +4,7 @@ import { Hono } from "hono";
 import { streamSSE } from "hono/streaming";
 import { createModelClient } from "../agent/model-client";
 import { Runner } from "../agent/runner";
+import { getTools } from "../agent/tools/registry";
 import { getProvider } from "../providers";
 import { readConfig } from "../providers/config";
 import {
@@ -79,6 +80,7 @@ export const sessionsApi = new Hono()
 
       const runner = new Runner(session.id, {
         model,
+        tools: () => getTools(),
         emit: (event) => emitToSession(session.id, event),
       });
 

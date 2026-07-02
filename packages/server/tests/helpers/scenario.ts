@@ -47,6 +47,7 @@ export class Scenario {
   async sendMessage(text: string): Promise<void> {
     this.#runner = new Runner(this.session.id, {
       model: createModelClient(createMockModel(() => this.#nextStream())),
+      tools: () => this.#tools,
       emit: (event) => this.events.push(event),
     });
     await this.#runner.send({

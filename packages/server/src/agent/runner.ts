@@ -7,11 +7,12 @@ import type {
 } from "@motherbase/core";
 import { completing } from "./handlers/completing";
 import { error } from "./handlers/error";
+import { executingTool } from "./handlers/executing-tool";
 import { messageReceived } from "./handlers/message-received";
 import { preparingContext } from "./handlers/preparing-context";
 import { streaming } from "./handlers/streaming";
-import { MessageDraft } from "./message-draft";
 import type { ModelClient } from "./model-client";
+import type { ToolDefinition } from "./tools/definition";
 import type { RunContext, StateHandler } from "./types";
 
 const logger = getLogger(["Motherbase", "Agent", "Runner"]);
@@ -21,11 +22,13 @@ const handlers: Record<HandlerState, StateHandler> = {
   "preparing-context": preparingContext,
   streaming,
   completing,
+  "executing-tool": executingTool,
   error,
 };
 
 export type Deps = {
   model: ModelClient;
+  tools: () => readonly ToolDefinition[];
   emit: (event: AgentEvent) => void;
 };
 
@@ -48,7 +51,10 @@ export class Runner {
       emit: this.deps.emit,
       userMessage,
       modelContext: [],
-      draft: new MessageDraft(),
+      tools: this.deps.tools(),
+      draft: null,
+      finishReason: null,
+      reply: null,
       error: null,
     };
 

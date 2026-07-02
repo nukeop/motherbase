@@ -6,6 +6,7 @@ export const stateSchema = z.enum([
   "preparing-context",
   "streaming",
   "completing",
+  "executing-tool",
   "error",
 ]);
 
