@@ -1,5 +1,5 @@
 import { cli } from "./cli";
-import { initLogger } from "./logger";
+import { startup } from "./startup";
 
-await initLogger();
+await startup();
 await cli.parse();

@@ -21,11 +21,11 @@ const DEFAULT_TEST_PROVIDER = {
 type TestTool =
   | { name: string; description: string; behavior: "success"; output: unknown }
   | {
-    name: string;
-    description: string;
-    behavior: "tool-error";
-    message: string;
-  }
+      name: string;
+      description: string;
+      behavior: "tool-error";
+      message: string;
+    }
   | { name: string; description: string; behavior: "crash"; message: string };
 
 export const registerTools = async (
