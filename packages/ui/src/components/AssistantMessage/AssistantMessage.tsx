@@ -1,5 +1,6 @@
 import { ReasoningPart } from "./ReasoningPart";
 import { TextPart } from "./TextPart";
+import { ToolCallBlock } from "./ToolCallBlock";
 
 type MessagePart =
   | { type: "text"; text: string }
@@ -32,7 +33,15 @@ export const AssistantMessage = ({ parts }: AssistantMessageProps) => {
         if (part.type === "text") {
           return <TextPart key={key} text={part.text} />;
         }
-        // Rendered once the tool call block component exists.
+        if (part.type === "tool-call") {
+          return (
+            <ToolCallBlock
+              key={key}
+              toolName={part.toolName}
+              input={part.input}
+            />
+          );
+        }
         return null;
       })}
     </div>

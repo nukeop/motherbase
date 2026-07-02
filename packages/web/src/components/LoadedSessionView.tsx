@@ -4,6 +4,7 @@ import {
   Conversation,
   ErrorMessage,
   PromptInput,
+  ToolResultBlock,
   UserMessage,
 } from "@motherbase/ui";
 import { useModelSelection } from "../hooks/useModelSelection";
@@ -44,8 +45,15 @@ export const LoadedSessionView = ({
             return <ErrorMessage key={key} message={entry.message} />;
           }
           if (entry.kind === "tool-result") {
-            // Rendered once the tool result block component exists.
-            return null;
+            const key = `tool-result-${index}`;
+            return (
+              <ToolResultBlock
+                key={key}
+                toolName={entry.toolName}
+                outcome={entry.outcome}
+                output={entry.output}
+              />
+            );
           }
           const key = `${entry.role}-${index}`;
           if (entry.role === "user") {

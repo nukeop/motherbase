@@ -40,7 +40,7 @@ expect(scenario.events).toEqual([...]);
 expect(scenario.messages).toEqual([...]);
 ```
 
-Mock model (`packages/server/tests/helpers/mock-model.ts`): `createMockModel(chunks)` returns a `MockLanguageModelV3` that replays scripted `ModelChunk`s.
+Mock model (`packages/server/tests/helpers/mock-model.ts`): `createMockModel(nextStream)` returns a `MockLanguageModelV3`; each `doStream` call pulls the next scripted stream from the factory. `Scenario.scriptTurn` queues one stream per call, and a tool-calling turn consumes one stream per cycle.
 
 ### E2E tests
 
@@ -57,26 +57,34 @@ Mounted at `/_test/*` only when `NODE_ENV=test`.
 { "providers": [{ "id": "test-provider", "name": "Test Provider", "models": [{ "id": "test-model", "name": "Test Model" }] }] }
 ```
 
-**`POST /_test/model`** - scripts the next model response:
+**`POST /_test/model`** - queues one model response per call. Each streaming cycle consumes one queued response, so a tool-calling turn needs one post per cycle: a single-call turn takes two (first finishes with `tool-calls`, second with `stop`), and the loop keeps cycling as long as responses finish with `tool-calls`. Chunks are block-structured: a `text-start` must open a block before `text-delta`s extend it.
 ```json
-{ "chunks": [{ "type": "text-delta", "text": "Hello" }, { "type": "finish", "reason": "stop" }] }
+{ "provider": "test-provider", "model": "test-model", "chunks": [{ "type": "text-start" }, { "type": "text-delta", "text": "Hello" }, { "type": "finish", "reason": "stop" }] }
 ```
+
+**`POST /_test/tools`** - registers fake tools in the tool registry (replaces by name):
+```json
+{ "tools": [{ "name": "echo", "description": "Echoes", "behavior": "success", "output": { "echoed": "ping" } }] }
+```
+`behavior` is `success` (resolves with `output`), `tool-error` (throws `ToolError(message)`), or `crash` (throws `Error(message)`).
 
 E2E test setup pattern:
 1. Register a test provider via `POST /_test/providers`
-2. Script its response via `POST /_test/model`
-3. Set active provider/model via `POST /state/provider` and `POST /state/model`
+2. Queue its responses via `POST /_test/model` (and register tools via `POST /_test/tools` if the turn calls any)
+3. Select the provider and model through the UI (see `selectProvider`/`selectModel` in `tests/e2e/helpers.ts`)
 4. Interact with the UI
 
 ## Architecture
 
 ### History entries
 
-Stored in the `entry` table. Discriminated by `kind` column. JSON `data` column holds the full payload. Currently two kinds: `message` and `error`. `projectForModel` filters to `kind === "message"` before sending history to the model.
+Stored in the `entry` table. Discriminated by `kind` column. JSON `data` column holds the full payload. Three kinds: `message`, `error`, and `tool-result`. `projectForModel` keeps `message` and `tool-result` entries (the `ModelEntry` union) when projecting history for the model; `error` entries are UI-only.
 
 ### Agent loop
 
-`Runner.send()` appends the user message, streams from the model, accumulates deltas in a `MessageDraft`, emits `message-in-progress` snapshots, persists the completed reply, and emits `message-completed` + `turn-completed`.
+`Runner.send()` appends the user message, streams from the model, accumulates chunks in a `MessageDraft`, emits `message-in-progress` snapshots, persists the completed reply, and emits `message-completed`. The `completing` state then branches on the finish reason: `stop` ends the turn, `tool-calls` moves to `executing-tool`, which runs each `tool-call` part of the reply sequentially. Every call produces a `tool-result` entry (`outcome: "success" | "error" | "crash"`; a thrown `ToolError` means `error`, any other throw means `crash`) appended to history and emitted as a `tool-result` event. Tool failures never produce `error` entries; the model reads the result and carries on. The loop then re-projects history through `preparing-context` and streams again, repeating until the model finishes with `stop`. `turn-completed` fires once per `send()`.
+
+Tools live in a process-wide registry (`packages/server/src/agent/tools/registry.ts`); the Runner receives a resolver thunk (`Deps.tools`) re-resolved at each `send()` and snapshotted onto the turn's context.
 
 ## Linting
 

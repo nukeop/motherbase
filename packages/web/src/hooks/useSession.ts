@@ -44,9 +44,22 @@ export const useSession = (sessionId: string) => {
   useEffect(() => {
     const source = new EventSource(`${BASE_URL}/sessions/${sessionId}/events`);
 
+    source.addEventListener("open", () => {
+      queryClient.invalidateQueries({ queryKey: sessionKey(sessionId) });
+    });
+
     source.addEventListener("message-in-progress", (event) => {
       const { parts } = JSON.parse(event.data);
       setStreamingParts(parts);
+    });
+
+    source.addEventListener("message-completed", () => {
+      setStreamingParts(null);
+      queryClient.invalidateQueries({ queryKey: sessionKey(sessionId) });
+    });
+
+    source.addEventListener("tool-result", () => {
+      queryClient.invalidateQueries({ queryKey: sessionKey(sessionId) });
     });
 
     source.addEventListener("turn-completed", () => {
