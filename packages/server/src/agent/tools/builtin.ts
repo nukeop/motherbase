@@ -5,7 +5,7 @@ import { registerTool } from "./registry";
 const builtinTools: ReadonlyArray<() => ToolDefinition> = [createReadTool];
 
 export const registerBuiltinTools = (): void => {
-  builtinTools.forEach(createTool => {
+  builtinTools.forEach((createTool) => {
     registerTool(createTool());
-  })
+  });
 };

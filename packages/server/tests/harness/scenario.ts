@@ -5,7 +5,11 @@ import { createModelClient } from "../../src/agent/model-client";
 import { Runner } from "../../src/agent/runner";
 import type { ToolDefinition } from "../../src/agent/tools/definition";
 import { createSession, getHistory } from "../../src/sessions/store";
-import { createMockModel, createStream, toStreamParts } from "./mock-model";
+import {
+  createMockModel,
+  createStream,
+  toStreamParts,
+} from "../mocks/mock-model";
 
 export class Scenario {
   readonly session = createSession({

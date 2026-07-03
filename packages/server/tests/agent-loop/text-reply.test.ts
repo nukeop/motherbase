@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import type { MessageEntry } from "@motherbase/core";
-import { Scenario } from "../helpers/scenario";
+import { Scenario } from "../harness/scenario";
 
 describe("text reply turn", () => {
   test("a sent message streams back a text reply and the session returns to idle", async () => {

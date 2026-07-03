@@ -7,14 +7,9 @@ import type {
 } from "@motherbase/core";
 import { z } from "zod";
 import type { ToolDefinition } from "../../src/agent/tools/definition";
-import { Scenario } from "../helpers/scenario";
-import {
-  crashingTool,
-  echoTool,
-  scriptTextReply,
-  scriptToolCallTurn,
-  toolErrorTool,
-} from "../helpers/tool-fixtures";
+import { crashingTool, echoTool, toolErrorTool } from "../fixtures/tools";
+import { Scenario } from "../harness/scenario";
+import { scriptTextReply, scriptToolCallTurn } from "../utils/scripting";
 
 describe("tool call turn", () => {
   test("a tool-calling reply executes the tool and the model continues with the result", async () => {

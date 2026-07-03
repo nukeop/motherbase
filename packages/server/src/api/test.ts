@@ -1,10 +1,10 @@
 import { zValidator } from "@hono/zod-validator";
 import { Hono } from "hono";
 import { z } from "zod";
-import { installFileMock, mockFile } from "../../tests/helpers/mock-files";
-import { createMockModel } from "../../tests/helpers/mock-model";
-import { TestScripts } from "../../tests/helpers/test-scripts";
-import { toToolDefinition } from "../../tests/helpers/test-tools";
+import { toToolDefinition } from "../../tests/fixtures/test-tools";
+import { TestScripts } from "../../tests/harness/test-scripts";
+import { installFileMock, mockFile } from "../../tests/mocks/mock-files";
+import { createMockModel } from "../../tests/mocks/mock-model";
 import { registerTool } from "../agent/tools/registry";
 import { configPath } from "../paths";
 import { registerProvider } from "../providers";

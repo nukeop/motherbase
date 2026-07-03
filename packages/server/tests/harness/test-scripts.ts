@@ -1,6 +1,6 @@
 import type { LanguageModelV3StreamPart } from "@ai-sdk/provider";
 import type { ModelChunk } from "../../src/agent/model-chunk";
-import { createStream, toStreamParts } from "./mock-model";
+import { createStream, toStreamParts } from "../mocks/mock-model";
 
 type ModelScript = {
   chunks: ModelChunk[];
