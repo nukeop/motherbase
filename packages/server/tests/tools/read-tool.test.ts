@@ -157,16 +157,168 @@ describe("read tool", () => {
   });
 
   describe("listing directories", () => {
-    it.todo("lists entries sorted, with trailing slashes on subdirectories", () => {});
-    it.todo("pages entries with offset and limit", () => {});
+    it("lists entries sorted, with trailing slashes on subdirectories", async () => {
+      const scenario = await readTurn(
+        {
+          "/project/package.json": "{}",
+          "/project/README.md": "docs",
+          "/project/src/index.ts": "",
+        },
+        { filePath: "/project" },
+      );
+
+      expect(scenario.messages[2]).toEqual({
+        kind: "tool-result",
+        toolCallId: "call-1",
+        toolName: "read",
+        outcome: "success",
+        output: dedent`
+          <path>/project</path>
+          <type>directory</type>
+          <content>
+          README.md
+          package.json
+          src/
+          (Directory - total 3 entries)
+          </content>
+        `,
+      });
+    });
+
+    it("pages entries with offset and limit", async () => {
+      const scenario = await readTurn(
+        {
+          "/project/a.txt": "",
+          "/project/b.txt": "",
+          "/project/c.txt": "",
+          "/project/d.txt": "",
+        },
+        { filePath: "/project", offset: 2, limit: 2 },
+      );
+
+      expect(scenario.messages[2]).toEqual({
+        kind: "tool-result",
+        toolCallId: "call-1",
+        toolName: "read",
+        outcome: "success",
+        output: dedent`
+          <path>/project</path>
+          <type>directory</type>
+          <content>
+          b.txt
+          c.txt
+          (Showing entries 2-3 of 4. Use offset=4 to continue.)
+          </content>
+        `,
+      });
+    });
   });
 
   describe("errors", () => {
-    it.todo("rejects a relative path", () => {});
-    it.todo("reports a missing file with did-you-mean suggestions", () => {});
-    it.todo("reports a missing file plainly when nothing similar exists", () => {});
-    it.todo("rejects an offset past the end of the file", () => {});
-    it.todo("rejects a binary file", () => {});
-    it.todo("completes the turn normally after a read error", () => {});
+    it("rejects a relative path", async () => {
+      const scenario = await readTurn(
+        { "/project/notes.txt": "first\n" },
+        { filePath: "src/notes.txt" },
+      );
+
+      expect(scenario.messages[2]).toEqual({
+        kind: "tool-result",
+        toolCallId: "call-1",
+        toolName: "read",
+        outcome: "error",
+        output: "Path must be absolute: src/notes.txt",
+      });
+    });
+
+    it("reports a missing file with did-you-mean suggestions", async () => {
+      const scenario = await readTurn(
+        {
+          "/project/notes.txt": "",
+          "/project/notes1.txt": "",
+          "/project/notes2.txt": "",
+          "/project/notes3.txt": "",
+          "/project/other.md": "",
+        },
+        { filePath: "/project/NOTES" },
+      );
+
+      expect(scenario.messages[2]).toEqual({
+        kind: "tool-result",
+        toolCallId: "call-1",
+        toolName: "read",
+        outcome: "error",
+        output: dedent`
+          File not found: /project/NOTES
+          Did you mean one of these?
+          - notes.txt
+          - notes1.txt
+          - notes2.txt
+        `,
+      });
+    });
+
+    it("reports a missing file plainly when nothing similar exists", async () => {
+      const scenario = await readTurn(
+        { "/project/readme.md": "docs" },
+        { filePath: "/project/config.json" },
+      );
+
+      expect(scenario.messages[2]).toEqual({
+        kind: "tool-result",
+        toolCallId: "call-1",
+        toolName: "read",
+        outcome: "error",
+        output: "File not found: /project/config.json",
+      });
+    });
+
+    it("rejects an offset past the end of the file", async () => {
+      const scenario = await readTurn(
+        { "/project/notes.txt": "first\nsecond\nthird\n" },
+        { filePath: "/project/notes.txt", offset: 10 },
+      );
+
+      expect(scenario.messages[2]).toEqual({
+        kind: "tool-result",
+        toolCallId: "call-1",
+        toolName: "read",
+        outcome: "error",
+        output: "Offset 10 is out of range (3 lines)",
+      });
+    });
+
+    it("rejects a binary file", async () => {
+      const scenario = await readTurn(
+        { "/project/blob.bin": "PK\u0003\u0004\u0000payload" },
+        { filePath: "/project/blob.bin" },
+      );
+
+      expect(scenario.messages[2]).toEqual({
+        kind: "tool-result",
+        toolCallId: "call-1",
+        toolName: "read",
+        outcome: "error",
+        output: "Cannot read binary file: /project/blob.bin",
+      });
+    });
+
+    it("completes the turn normally after a read error", async () => {
+      const scenario = await readTurn(
+        { "/project/notes.txt": "first\n" },
+        { filePath: "src/notes.txt" },
+      );
+
+      const result = scenario.messages[2] as { outcome: string };
+      expect(result.outcome).toBe("error");
+      expect(scenario.messages[3]).toEqual({
+        kind: "message",
+        role: "assistant",
+        parts: [{ type: "text", text: "Done" }],
+      });
+      expect(scenario.events.at(-1)).toEqual({ type: "turn-completed" });
+      expect(scenario.events.some((event) => event.type === "error")).toBe(
+        false,
+      );
+    });
   });
 });
