@@ -10,6 +10,9 @@ const footer = (result: FileReadResult): string => {
   if (end.reason === "eof") {
     return `(End of file - total ${end.totalLines} lines)`;
   }
+  if (end.reason === "byteLimit") {
+    return `(Output capped at 50 KB. Showing lines ${result.startLine}-${end.lastLine}. Use offset=${end.nextOffset} to continue.)`;
+  }
   return `(Showing lines ${result.startLine}-${end.lastLine}. More lines exist. Use offset=${end.nextOffset} to continue.)`;
 };
 

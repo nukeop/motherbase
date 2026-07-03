@@ -1,6 +1,5 @@
-export type ReadFs = {
-  readFile(path: string, encoding: BufferEncoding): Promise<string | Buffer>;
-};
+import type { ReadFs } from "./fs";
+import { streamChunks, streamLines } from "./streaming";
 
 export type ReadWindow = {
   offset?: number;
@@ -14,37 +13,63 @@ export type FileReadResult = {
   startLine: number;
   end:
     | { reason: "eof"; totalLines: number }
-    | { reason: "lineLimit"; lastLine: number; nextOffset: number };
+    | { reason: "lineLimit"; lastLine: number; nextOffset: number }
+    | { reason: "byteLimit"; lastLine: number; nextOffset: number };
 };
 
 export type ReadResult = FileReadResult;
 
-const toLines = (content: string): string[] => {
-  const text = content.endsWith("\n") ? content.slice(0, -1) : content;
-  return text.split("\n");
+const DEFAULT_LIMIT = 500;
+const MAX_LINE_LENGTH = 2000;
+const MAX_OUTPUT_BYTES = 51200;
+
+const truncateLine = (line: string): string => {
+  if (line.length <= MAX_LINE_LENGTH) {
+    return line;
+  }
+  return `${line.slice(0, MAX_LINE_LENGTH)}... (line truncated)`;
 };
 
-const sliceWindow = (
-  lines: string[],
-  startLine: number,
-  limit?: number,
-): string[] => {
-  if (limit === undefined) {
-    return lines.slice(startLine - 1);
-  }
-  return lines.slice(startLine - 1, startLine - 1 + limit);
-};
+type Collected = Pick<FileReadResult, "lines" | "startLine" | "end">;
 
-const windowEnd = (
+const collectWindow = async (
+  lineStream: AsyncIterable<string>,
   startLine: number,
-  shownCount: number,
-  totalLines: number,
-): FileReadResult["end"] => {
-  const lastLine = startLine + shownCount - 1;
-  if (lastLine < totalLines) {
-    return { reason: "lineLimit", lastLine, nextOffset: lastLine + 1 };
+  limit: number,
+): Promise<Collected> => {
+  const lines: string[] = [];
+  let bytes = 0;
+  let lineNumber = 0;
+  let stopReason: "lineLimit" | "byteLimit" | undefined;
+
+  for await (const rawLine of lineStream) {
+    lineNumber += 1;
+    if (lineNumber < startLine) {
+      continue;
+    }
+    if (lines.length === limit) {
+      stopReason = "lineLimit";
+      break;
+    }
+    const line = truncateLine(rawLine);
+    const lineBytes = Buffer.byteLength(line);
+    if (bytes + lineBytes > MAX_OUTPUT_BYTES) {
+      stopReason = "byteLimit";
+      break;
+    }
+    lines.push(line);
+    bytes += lineBytes;
   }
-  return { reason: "eof", totalLines };
+
+  if (stopReason === undefined) {
+    return { lines, startLine, end: { reason: "eof", totalLines: lineNumber } };
+  }
+  const lastLine = startLine + lines.length - 1;
+  return {
+    lines,
+    startLine,
+    end: { reason: stopReason, lastLine, nextOffset: lastLine + 1 },
+  };
 };
 
 export const readPath = async (
@@ -52,15 +77,10 @@ export const readPath = async (
   path: string,
   window: ReadWindow,
 ): Promise<ReadResult> => {
-  const content = await fs.readFile(path, "utf8");
-  const allLines = toLines(content.toString());
-  const startLine = window.offset ?? 1;
-  const lines = sliceWindow(allLines, startLine, window.limit);
-  return {
-    type: "file",
-    path,
-    lines,
-    startLine,
-    end: windowEnd(startLine, lines.length, allLines.length),
-  };
+  const collected = await collectWindow(
+    streamLines(streamChunks(fs, path)),
+    window.offset ?? 1,
+    window.limit ?? DEFAULT_LIMIT,
+  );
+  return { type: "file", path, ...collected };
 };
