@@ -224,7 +224,10 @@ describe("read tool", () => {
         toolCallId: "call-1",
         toolName: "read",
         outcome: "error",
-        output: "Path must be absolute: src/notes.txt",
+        output: dedent`
+          ✖ Path must be absolute
+            → at filePath
+        `,
       });
     });
 

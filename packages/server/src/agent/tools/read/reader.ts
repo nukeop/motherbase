@@ -1,4 +1,6 @@
-import type { ReadFs } from "./fs";
+import { ToolError } from "../definition";
+import { isNotFound, notFoundError } from "./errors";
+import type { ReadDirent, ReadFs, ReadStats } from "./fs";
 import { streamChunks, streamLines } from "./streaming";
 
 export type ReadWindow = {
@@ -17,7 +19,15 @@ export type FileReadResult = {
     | { reason: "byteLimit"; lastLine: number; nextOffset: number };
 };
 
-export type ReadResult = FileReadResult;
+export type DirectoryReadResult = {
+  type: "directory";
+  path: string;
+  entries: string[];
+  startIndex: number;
+  total: number;
+};
+
+export type ReadResult = FileReadResult | DirectoryReadResult;
 
 const DEFAULT_LIMIT = 500;
 const MAX_LINE_LENGTH = 2000;
@@ -72,15 +82,86 @@ const collectWindow = async (
   };
 };
 
+async function* assertText(
+  chunks: AsyncIterable<Uint8Array>,
+  path: string,
+): AsyncGenerator<Uint8Array> {
+  let first = true;
+  for await (const chunk of chunks) {
+    if (first && chunk.includes(0)) {
+      throw new ToolError(`Cannot read binary file: ${path}`);
+    }
+    first = false;
+    yield chunk;
+  }
+}
+
+const assertOffsetInRange = (
+  offset: number | undefined,
+  total: number,
+  unit: string,
+): void => {
+  if (offset !== undefined && offset > Math.max(total, 1)) {
+    throw new ToolError(`Offset ${offset} is out of range (${total} ${unit})`);
+  }
+};
+
+const readFile = async (
+  fs: ReadFs,
+  path: string,
+  window: ReadWindow,
+): Promise<FileReadResult> => {
+  const collected = await collectWindow(
+    streamLines(assertText(streamChunks(fs, path), path)),
+    window.offset ?? 1,
+    window.limit ?? DEFAULT_LIMIT,
+  );
+  if (collected.end.reason === "eof") {
+    assertOffsetInRange(window.offset, collected.end.totalLines, "lines");
+  }
+  return { type: "file", path, ...collected };
+};
+
+const toEntryName = (dirent: ReadDirent): string => {
+  if (dirent.isDirectory()) {
+    return `${dirent.name}/`;
+  }
+  return dirent.name;
+};
+
+const readDirectory = async (
+  fs: ReadFs,
+  path: string,
+  window: ReadWindow,
+): Promise<DirectoryReadResult> => {
+  const dirents = await fs.readdir(path, { withFileTypes: true });
+  const names = dirents.map(toEntryName).sort();
+  assertOffsetInRange(window.offset, names.length, "entries");
+  const startIndex = window.offset ?? 1;
+  const limit = window.limit ?? DEFAULT_LIMIT;
+  const entries = names.slice(startIndex - 1, startIndex - 1 + limit);
+  return { type: "directory", path, entries, startIndex, total: names.length };
+};
+
+const statOrExplain = async (fs: ReadFs, path: string): Promise<ReadStats> => {
+  try {
+    return await fs.stat(path);
+  } catch (error) {
+    if (isNotFound(error)) {
+      throw await notFoundError(fs, path);
+    }
+    throw error;
+  }
+};
+
 export const readPath = async (
   fs: ReadFs,
   path: string,
   window: ReadWindow,
 ): Promise<ReadResult> => {
-  const collected = await collectWindow(
-    streamLines(streamChunks(fs, path)),
-    window.offset ?? 1,
-    window.limit ?? DEFAULT_LIMIT,
-  );
-  return { type: "file", path, ...collected };
+  const stats = await statOrExplain(fs, path);
+  if (stats.isDirectory()) {
+    return readDirectory(fs, path, window);
+  }
+  return readFile(fs, path, window);
 };
