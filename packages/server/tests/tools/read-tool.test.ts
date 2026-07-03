@@ -135,9 +135,7 @@ describe("read tool", () => {
         { filePath: "/project/heavy.txt" },
       );
 
-      const numbered = lines
-        .slice(0, 51)
-        .map((line, i) => `${i + 1}: ${line}`);
+      const numbered = lines.slice(0, 51).map((line, i) => `${i + 1}: ${line}`);
 
       expect(scenario.messages[2]).toEqual({
         kind: "tool-result",

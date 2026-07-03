@@ -1,11 +1,7 @@
-import type { ToolDefinition } from "./definition";
+import * as nodeFs from "node:fs/promises";
 import { createReadTool } from "./read";
 import { registerTool } from "./registry";
 
-const builtinTools: ReadonlyArray<() => ToolDefinition> = [createReadTool];
-
 export const registerBuiltinTools = (): void => {
-  builtinTools.forEach((createTool) => {
-    registerTool(createTool());
-  });
+  registerTool(createReadTool({ fs: nodeFs }));
 };
