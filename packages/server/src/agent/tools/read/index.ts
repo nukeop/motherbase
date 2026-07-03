@@ -18,7 +18,10 @@ export const createReadTool = ({
   inputSchema,
   execute: async (raw) => {
     const input = raw as ReadInput;
-    const result = await readPath(fs, input.filePath);
+    const result = await readPath(fs, input.filePath, {
+      offset: input.offset,
+      limit: input.limit,
+    });
     return formatter(result);
   },
 });
