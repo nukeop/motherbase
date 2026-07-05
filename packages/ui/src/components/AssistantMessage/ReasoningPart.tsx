@@ -20,7 +20,7 @@ export const ReasoningPart = ({ text, isLast }: ReasoningPartProps) => {
       <CornerAccent position="bottom-right" className="border-blue" />
       <div
         className={cn(
-          "flex items-center gap-2 px-4 py-3 font-mono text-xs uppercase tracking-widest text-blue",
+          "flex select-none items-center gap-2 px-4 py-3 font-mono text-xs uppercase tracking-widest text-blue",
           { "cursor-pointer": !isLast },
         )}
         onClick={toggle}

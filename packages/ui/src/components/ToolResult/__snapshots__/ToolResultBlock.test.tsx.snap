@@ -3,8 +3,13 @@
 exports[`ToolResultBlock renders a success result as a JSON dump 1`] = `
 "<div>
   <div data-testid="tool-result" class="border border-steel/20">
-    <div class="px-4 py-2 font-mono text-xs uppercase tracking-widest text-steel">
-      Tool result · echo · success
+    <div class="flex select-none items-center gap-2 px-4 py-2 font-mono text-xs uppercase tracking-widest text-steel">
+      <span>
+        ◆
+      </span>
+      <span>
+        Tool result · echo · success
+      </span>
     </div>
     <pre class="whitespace-pre-wrap wrap-break-word bg-gunmetal px-4 py-3 font-mono text-xs text-cream">
       {
@@ -17,11 +22,20 @@ exports[`ToolResultBlock renders a success result as a JSON dump 1`] = `
 
 exports[`ToolResultBlock delegates an error result to ToolErrorBlock 1`] = `
 "<div>
-  <div data-testid="tool-error" class="border border-red/40">
-    <div class="px-4 py-2 font-mono text-xs uppercase tracking-widest text-red">
-      Tool error
+  <div data-testid="tool-error" class="relative border border-red/30 bg-red/10">
+    <span class="absolute w-2.5 h-2.5 -top-px -left-px border-t-2 border-l-2 border-red">
+    </span>
+    <span class="absolute w-2.5 h-2.5 -bottom-px -right-px border-b-2 border-r-2 border-red">
+    </span>
+    <div class="flex select-none items-center gap-2 px-4 py-3 font-mono text-xs uppercase tracking-widest text-red">
+      <span>
+        ◆
+      </span>
+      <span>
+        Tool error
+      </span>
     </div>
-    <pre class="whitespace-pre-wrap wrap-break-word bg-gunmetal px-4 py-3 font-mono text-xs text-cream">
+    <pre class="whitespace-pre-wrap wrap-break-word px-4 pb-3 pt-1 font-mono text-xs text-ink">
       some tool error
     </pre>
   </div>
@@ -30,11 +44,20 @@ exports[`ToolResultBlock delegates an error result to ToolErrorBlock 1`] = `
 
 exports[`ToolResultBlock delegates a crash result to ToolErrorBlock 1`] = `
 "<div>
-  <div data-testid="tool-error" class="border border-red/40">
-    <div class="px-4 py-2 font-mono text-xs uppercase tracking-widest text-red">
-      Tool crashed
+  <div data-testid="tool-error" class="relative border border-red/30 bg-red/10">
+    <span class="absolute w-2.5 h-2.5 -top-px -left-px border-t-2 border-l-2 border-red">
+    </span>
+    <span class="absolute w-2.5 h-2.5 -bottom-px -right-px border-b-2 border-r-2 border-red">
+    </span>
+    <div class="flex select-none items-center gap-2 px-4 py-3 font-mono text-xs uppercase tracking-widest text-red">
+      <span>
+        ◆
+      </span>
+      <span>
+        Tool crashed
+      </span>
     </div>
-    <pre class="whitespace-pre-wrap wrap-break-word bg-gunmetal px-4 py-3 font-mono text-xs text-cream">
+    <pre class="whitespace-pre-wrap wrap-break-word px-4 pb-3 pt-1 font-mono text-xs text-ink">
       some tool crash
     </pre>
   </div>

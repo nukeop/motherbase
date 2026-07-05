@@ -3,14 +3,19 @@
 exports[`ReadToolCall renders the path with basename emphasized 1`] = `
 "<div>
   <div data-testid="read-tool-call" class="flex items-baseline gap-3 px-4 py-2">
-    <span class="font-mono text-xs uppercase tracking-widest text-steel">
-      read
+    <span class="flex select-none items-center gap-2 font-mono text-xs uppercase tracking-widest text-steel">
+      <span>
+        ◆
+      </span>
+      <span>
+        read
+      </span>
     </span>
     <span class="font-mono text-sm">
       <span class="text-steel">
         /projects/app/src/
       </span>
-      <span class="text-cream">
+      <span class="font-medium text-ink">
         notes.txt
       </span>
     </span>
@@ -21,14 +26,19 @@ exports[`ReadToolCall renders the path with basename emphasized 1`] = `
 exports[`ReadToolCall renders an offset/limit range suffix 1`] = `
 "<div>
   <div data-testid="read-tool-call" class="flex items-baseline gap-3 px-4 py-2">
-    <span class="font-mono text-xs uppercase tracking-widest text-steel">
-      read
+    <span class="flex select-none items-center gap-2 font-mono text-xs uppercase tracking-widest text-steel">
+      <span>
+        ◆
+      </span>
+      <span>
+        read
+      </span>
     </span>
     <span class="font-mono text-sm">
       <span class="text-steel">
         /a/
       </span>
-      <span class="text-cream">
+      <span class="font-medium text-ink">
         b.txt
       </span>
       <span class="text-steel">
@@ -42,14 +52,19 @@ exports[`ReadToolCall renders an offset/limit range suffix 1`] = `
 exports[`ReadToolCall renders offset-only input without a range suffix 1`] = `
 "<div>
   <div data-testid="read-tool-call" class="flex items-baseline gap-3 px-4 py-2">
-    <span class="font-mono text-xs uppercase tracking-widest text-steel">
-      read
+    <span class="flex select-none items-center gap-2 font-mono text-xs uppercase tracking-widest text-steel">
+      <span>
+        ◆
+      </span>
+      <span>
+        read
+      </span>
     </span>
     <span class="font-mono text-sm">
       <span class="text-steel">
         /a/
       </span>
-      <span class="text-cream">
+      <span class="font-medium text-ink">
         b.txt
       </span>
     </span>

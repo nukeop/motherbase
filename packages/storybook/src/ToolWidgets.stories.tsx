@@ -14,7 +14,7 @@ const notFoundMessage =
 
 export const ReadCall: Story = {
   render: () => (
-    <div className="w-150 bg-gunmetal">
+    <div className="w-150 bg-cream p-4">
       <ReadToolCall
         toolName="read"
         input={{ filePath: "/projects/app/src/notes.txt" }}
@@ -25,7 +25,7 @@ export const ReadCall: Story = {
 
 export const ReadCallWithRange: Story = {
   render: () => (
-    <div className="w-150 bg-gunmetal">
+    <div className="w-150 bg-cream p-4">
       <ReadToolCall
         toolName="read"
         input={{
@@ -40,7 +40,7 @@ export const ReadCallWithRange: Story = {
 
 export const ToolError: Story = {
   render: () => (
-    <div className="w-150 bg-gunmetal">
+    <div className="w-150 bg-cream p-4">
       <ToolErrorBlock outcome="error" output={notFoundMessage} />
     </div>
   ),
@@ -48,7 +48,7 @@ export const ToolError: Story = {
 
 export const ToolCrash: Story = {
   render: () => (
-    <div className="w-150 bg-gunmetal">
+    <div className="w-150 bg-cream p-4">
       <ToolErrorBlock
         outcome="crash"
         output="they played us like a damn fiddle!"
@@ -59,7 +59,7 @@ export const ToolCrash: Story = {
 
 export const DefaultResult: Story = {
   render: () => (
-    <div className="w-150 bg-gunmetal">
+    <div className="w-150 bg-cream p-4">
       <ToolResultBlock
         toolName="echo"
         outcome="success"

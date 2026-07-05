@@ -1,3 +1,5 @@
+import { CornerAccent } from "../UserMessage/CornerAccent";
+
 type FailureOutcome = "error" | "crash";
 
 type ToolErrorBlockProps = {
@@ -16,11 +18,17 @@ const headerText = (outcome: FailureOutcome): string => {
 
 export const ToolErrorBlock = ({ outcome, output }: ToolErrorBlockProps) => {
   return (
-    <div data-testid="tool-error" className="border border-red/40">
-      <div className="px-4 py-2 font-mono text-xs uppercase tracking-widest text-red">
-        {headerText(outcome)}
+    <div
+      data-testid="tool-error"
+      className="relative border border-red/30 bg-red/10"
+    >
+      <CornerAccent position="top-left" className="border-red" />
+      <CornerAccent position="bottom-right" className="border-red" />
+      <div className="flex select-none items-center gap-2 px-4 py-3 font-mono text-xs uppercase tracking-widest text-red">
+        <span>◆</span>
+        <span>{headerText(outcome)}</span>
       </div>
-      <pre className="whitespace-pre-wrap wrap-break-word bg-gunmetal px-4 py-3 font-mono text-xs text-cream">
+      <pre className="whitespace-pre-wrap wrap-break-word px-4 pb-3 pt-1 font-mono text-xs text-ink">
         {output}
       </pre>
     </div>

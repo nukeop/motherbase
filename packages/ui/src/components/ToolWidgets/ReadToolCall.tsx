@@ -24,12 +24,13 @@ export const ReadToolCall = ({ input }: ToolCallWidgetProps<ReadToolInput>) => {
       data-testid="read-tool-call"
       className="flex items-baseline gap-3 px-4 py-2"
     >
-      <span className="font-mono text-xs uppercase tracking-widest text-steel">
-        read
+      <span className="flex select-none items-center gap-2 font-mono text-xs uppercase tracking-widest text-steel">
+        <span>◆</span>
+        <span>read</span>
       </span>
       <span className="font-mono text-sm">
         <span className="text-steel">{dirname}</span>
-        <span className="text-cream">{basename}</span>
+        <span className="font-medium text-ink">{basename}</span>
         {suffix !== null && <span className="text-steel">{suffix}</span>}
       </span>
     </div>

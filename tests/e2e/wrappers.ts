@@ -6,7 +6,7 @@ type ToolBlock = {
 };
 
 const toolBlock = (root: Locator): ToolBlock => ({
-  header: root.locator("div"),
+  header: root.locator("div > span").nth(1),
   body: root.locator("pre"),
 });
 
