@@ -1,20 +1,13 @@
 import { ToolErrorBlock } from "../ToolWidgets/ToolErrorBlock";
-
-type ToolOutcome = "success" | "error" | "crash";
-
-type ToolResultBlockProps = {
-  toolName: string;
-  outcome: ToolOutcome;
-  output: unknown;
-};
+import type { ToolResultWidgetProps } from "../ToolWidgets/types";
 
 export const ToolResultBlock = ({
   toolName,
   outcome,
   output,
-}: ToolResultBlockProps) => {
+}: ToolResultWidgetProps) => {
   if (outcome === "error" || outcome === "crash") {
-    return <ToolErrorBlock outcome={outcome} output={output} />;
+    return <ToolErrorBlock outcome={outcome} output={String(output)} />;
   }
   return (
     <div data-testid="tool-result" className="border border-steel/20">

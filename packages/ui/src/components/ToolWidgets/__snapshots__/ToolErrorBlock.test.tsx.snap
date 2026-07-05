@@ -1,0 +1,29 @@
+// Bun Snapshot v1, https://bun.sh/docs/test/snapshots
+
+exports[`ToolErrorBlock renders a tool error with the error header 1`] = `
+"<div>
+  <div data-testid="tool-error" class="border border-red/40">
+    <div class="px-4 py-2 font-mono text-xs uppercase tracking-widest text-red">
+      Tool error
+    </div>
+    <pre class="whitespace-pre-wrap wrap-break-word bg-gunmetal px-4 py-3 font-mono text-xs text-cream">
+      File not found: /projects/app/NOTES
+Did you mean one of these?
+- notes.txt
+    </pre>
+  </div>
+</div>"
+`;
+
+exports[`ToolErrorBlock renders a crash with the crashed header 1`] = `
+"<div>
+  <div data-testid="tool-error" class="border border-red/40">
+    <div class="px-4 py-2 font-mono text-xs uppercase tracking-widest text-red">
+      Tool crashed
+    </div>
+    <pre class="whitespace-pre-wrap wrap-break-word bg-gunmetal px-4 py-3 font-mono text-xs text-cream">
+      they played us like a damn fiddle!
+    </pre>
+  </div>
+</div>"
+`;

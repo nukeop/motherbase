@@ -1,9 +1,6 @@
-type ToolCallBlockProps = {
-  toolName: string;
-  input: unknown;
-};
+import type { ToolCallWidgetProps } from "../ToolWidgets/types";
 
-export const ToolCallBlock = ({ toolName, input }: ToolCallBlockProps) => {
+export const ToolCallBlock = ({ toolName, input }: ToolCallWidgetProps) => {
   return (
     <div data-testid="tool-call" className="border border-steel/20">
       <div className="px-4 py-2 font-mono text-xs uppercase tracking-widest text-steel">

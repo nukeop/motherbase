@@ -68,6 +68,7 @@
         "@fontsource-variable/jetbrains-mono": "^5.2.8",
         "@fontsource/chakra-petch": "^5.2.7",
         "@headlessui/react": "^2.2.10",
+        "@motherbase/core": "workspace:*",
         "class-variance-authority": "^0.7.1",
         "clsx": "^2.1.1",
         "motion": "^12.40.0",

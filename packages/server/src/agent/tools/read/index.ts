@@ -1,9 +1,9 @@
+import { type ReadToolInput, readToolInputSchema } from "@motherbase/core";
 import type { ToolDefinition } from "../definition";
 import { type ReadFormatter, xmlFormatter } from "./formatter";
 import type { ReadFs } from "./fs";
 import { prompt } from "./prompt";
 import { readPath } from "./reader";
-import { inputSchema, type ReadInput } from "./schema";
 
 type Deps = {
   fs: ReadFs;
@@ -16,9 +16,9 @@ export const createReadTool = ({
 }: Deps): ToolDefinition => ({
   name: "read",
   description: prompt,
-  inputSchema,
+  inputSchema: readToolInputSchema,
   execute: async (raw) => {
-    const input = raw as ReadInput;
+    const input = raw as ReadToolInput;
     const result = await readPath(fs, input.filePath, {
       offset: input.offset,
       limit: input.limit,

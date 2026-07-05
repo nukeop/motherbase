@@ -1,6 +1,7 @@
+import type { ReadToolOutput } from "@motherbase/core";
 import type { DirectoryReadResult, FileReadResult, ReadResult } from "./reader";
 
-export type ReadFormatter = (result: ReadResult) => string;
+export type ReadFormatter = (result: ReadResult) => ReadToolOutput;
 
 const numberLines = (result: FileReadResult): string[] =>
   result.lines.map((line, i) => `${result.startLine + i}: ${line}`);

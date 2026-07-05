@@ -4,8 +4,10 @@ import {
   Conversation,
   ErrorMessage,
   PromptInput,
+  resolveResultWidget,
   ToolResultBlock,
   UserMessage,
+  WidgetBoundary,
 } from "@motherbase/ui";
 import { useModelSelection } from "../hooks/useModelSelection";
 
@@ -46,13 +48,24 @@ export const LoadedSessionView = ({
           }
           if (entry.kind === "tool-result") {
             const key = `tool-result-${index}`;
+            const ResultWidget = resolveResultWidget(entry.toolName);
             return (
-              <ToolResultBlock
+              <WidgetBoundary
                 key={key}
-                toolName={entry.toolName}
-                outcome={entry.outcome}
-                output={entry.output}
-              />
+                fallback={
+                  <ToolResultBlock
+                    toolName={entry.toolName}
+                    outcome={entry.outcome}
+                    output={entry.output}
+                  />
+                }
+              >
+                <ResultWidget
+                  toolName={entry.toolName}
+                  outcome={entry.outcome}
+                  output={entry.output}
+                />
+              </WidgetBoundary>
             );
           }
           const key = `${entry.role}-${index}`;

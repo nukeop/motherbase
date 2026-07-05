@@ -1,0 +1,17 @@
+// Bun Snapshot v1, https://bun.sh/docs/test/snapshots
+
+exports[`WidgetBoundary renders the fallback when the child throws 1`] = `
+"<div>
+  <div>
+    generic fallback
+  </div>
+</div>"
+`;
+
+exports[`WidgetBoundary renders the child when it does not throw 1`] = `
+"<div>
+  <div>
+    the widget
+  </div>
+</div>"
+`;

@@ -12,5 +12,15 @@ export { type ModelData, PromptInput } from "./PromptInput";
 export { Select, type SelectItem } from "./Select";
 export { SessionList, type SessionListItem } from "./SessionList";
 export { ToolResultBlock } from "./ToolResult";
+export {
+  ReadToolCall,
+  ReadToolResult,
+  resolveCallWidget,
+  resolveResultWidget,
+  type ToolCallWidgetProps,
+  ToolErrorBlock,
+  type ToolResultWidgetProps,
+  WidgetBoundary,
+} from "./ToolWidgets";
 export { CornerAccent, UserMessage } from "./UserMessage";
 export { Workspace } from "./Workspace";

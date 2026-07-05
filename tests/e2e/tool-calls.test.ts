@@ -12,6 +12,7 @@ import {
   selectProvider,
   setTestConfig,
 } from "./helpers";
+import { conversation } from "./wrappers";
 
 const TEST_PROVIDER = {
   id: "tool-provider",
@@ -82,15 +83,16 @@ test("tool call round trip renders call, result, and continuation", async ({
   await expect(page.getByText("The echo came back.")).toBeVisible();
   await expect(page.getByText("Let me check.")).toBeVisible();
 
-  const call = page.getByTestId("tool-call");
-  await expect(call).toContainText("Tool call · echo");
-  await expect(call.locator("pre")).toHaveText(
+  const chat = conversation(page);
+  const call = chat.toolCall();
+  await expect(call.header).toHaveText("Tool call · echo");
+  await expect(call.body).toHaveText(
     JSON.stringify({ value: "ping" }, null, 2),
   );
 
-  const result = page.getByTestId("tool-result");
-  await expect(result).toContainText("Tool result · echo · success");
-  await expect(result.locator("pre")).toHaveText(
+  const result = chat.toolResult();
+  await expect(result.header).toHaveText("Tool result · echo · success");
+  await expect(result.body).toHaveText(
     JSON.stringify({ echoed: "ping" }, null, 2),
   );
 });
@@ -128,11 +130,12 @@ test("tool error becomes a result and the conversation continues", async ({
 
   await expect(page.getByText("The file was missing.")).toBeVisible();
 
-  const result = page.getByTestId("tool-result");
-  await expect(result).toContainText("Tool result · flaky · error");
-  await expect(result.locator("pre")).toHaveText('"file not found"');
+  const chat = conversation(page);
+  const error = chat.toolError();
+  await expect(error.header).toHaveText("Tool error");
+  await expect(error.body).toHaveText("file not found");
 
-  await expect(page.getByTestId("error-message")).toHaveCount(0);
+  await expect(chat.errorMessages).toHaveCount(0);
 });
 
 test("tool crash becomes a result and the conversation continues", async ({
@@ -170,11 +173,12 @@ test("tool crash becomes a result and the conversation continues", async ({
     page.getByText("Something went wrong inside the tool."),
   ).toBeVisible();
 
-  const result = page.getByTestId("tool-result");
-  await expect(result).toContainText("Tool result · buggy · crash");
-  await expect(result.locator("pre")).toHaveText('"unexpected explosion"');
+  const chat = conversation(page);
+  const error = chat.toolError();
+  await expect(error.header).toHaveText("Tool crashed");
+  await expect(error.body).toHaveText("unexpected explosion");
 
-  await expect(page.getByTestId("error-message")).toHaveCount(0);
+  await expect(chat.errorMessages).toHaveCount(0);
 });
 
 test("unknown tool name produces an error result", async ({
@@ -202,11 +206,12 @@ test("unknown tool name produces an error result", async ({
 
   await expect(page.getByText("That tool does not exist.")).toBeVisible();
 
-  const result = page.getByTestId("tool-result");
-  await expect(result).toContainText("Tool result · warp-drive · error");
-  await expect(result.locator("pre")).toHaveText('"No such tool: warp-drive"');
+  const chat = conversation(page);
+  const error = chat.toolError();
+  await expect(error.header).toHaveText("Tool error");
+  await expect(error.body).toHaveText("No such tool: warp-drive");
 
-  await expect(page.getByTestId("error-message")).toHaveCount(0);
+  await expect(chat.errorMessages).toHaveCount(0);
 });
 
 test("multiple tool calls in one message render in order", async ({
@@ -254,17 +259,20 @@ test("multiple tool calls in one message render in order", async ({
 
   await expect(page.getByText("Both tools are done.")).toBeVisible();
 
-  const calls = page.getByTestId("tool-call");
-  await expect(calls).toHaveCount(2);
-  await expect(calls.nth(0)).toContainText("Tool call · alpha");
-  await expect(calls.nth(1)).toContainText("Tool call · beta");
+  const chat = conversation(page);
+  await expect(chat.toolCalls).toHaveCount(2);
+  await expect(chat.toolCall(0).header).toHaveText("Tool call · alpha");
+  await expect(chat.toolCall(1).header).toHaveText("Tool call · beta");
 
-  const results = page.getByTestId("tool-result");
-  await expect(results).toHaveCount(2);
-  await expect(results.nth(0)).toContainText("Tool result · alpha · success");
-  await expect(results.nth(0).locator("pre")).toHaveText('"alpha output"');
-  await expect(results.nth(1)).toContainText("Tool result · beta · success");
-  await expect(results.nth(1).locator("pre")).toHaveText('"beta output"');
+  await expect(chat.toolResults).toHaveCount(2);
+  await expect(chat.toolResult(0).header).toHaveText(
+    "Tool result · alpha · success",
+  );
+  await expect(chat.toolResult(0).body).toHaveText('"alpha output"');
+  await expect(chat.toolResult(1).header).toHaveText(
+    "Tool result · beta · success",
+  );
+  await expect(chat.toolResult(1).body).toHaveText('"beta output"');
 
-  await expect(page.getByTestId("error-message")).toHaveCount(0);
+  await expect(chat.errorMessages).toHaveCount(0);
 });

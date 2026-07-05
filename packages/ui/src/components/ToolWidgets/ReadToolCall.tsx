@@ -1,6 +1,5 @@
-import type { ReadInput, ToolCallWidgetProps } from "./types";
-
-
+import type { ReadToolInput } from "@motherbase/core";
+import type { ToolCallWidgetProps } from "./types";
 
 const splitPath = (filePath: string) => {
   const basenameStart = filePath.lastIndexOf("/") + 1;
@@ -10,17 +9,16 @@ const splitPath = (filePath: string) => {
   };
 };
 
-const rangeSuffix = ({ offset, limit }: ReadInput): string | null => {
+const rangeSuffix = ({ offset, limit }: ReadToolInput): string | null => {
   if (offset === undefined || limit === undefined) {
     return null;
   }
   return `:${offset}-${offset + limit - 1}`;
 };
 
-export const ReadToolCall = ({ input }: ToolCallWidgetProps) => {
-  const read = input as ReadInput;
-  const { dirname, basename } = splitPath(read.filePath);
-  const suffix = rangeSuffix(read);
+export const ReadToolCall = ({ input }: ToolCallWidgetProps<ReadToolInput>) => {
+  const { dirname, basename } = splitPath(input.filePath);
+  const suffix = rangeSuffix(input);
   return (
     <div
       data-testid="read-tool-call"
