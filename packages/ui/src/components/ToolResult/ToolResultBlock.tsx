@@ -1,3 +1,5 @@
+import { ToolErrorBlock } from "../ToolWidgets/ToolErrorBlock";
+
 type ToolOutcome = "success" | "error" | "crash";
 
 type ToolResultBlockProps = {
@@ -11,6 +13,9 @@ export const ToolResultBlock = ({
   outcome,
   output,
 }: ToolResultBlockProps) => {
+  if (outcome === "error" || outcome === "crash") {
+    return <ToolErrorBlock outcome={outcome} output={output} />;
+  }
   return (
     <div data-testid="tool-result" className="border border-steel/20">
       <div className="px-4 py-2 font-mono text-xs uppercase tracking-widest text-steel">
