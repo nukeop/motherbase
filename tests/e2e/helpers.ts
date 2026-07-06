@@ -6,12 +6,14 @@ type TestConfig = {
   provider: string;
   model: string;
   cheap: { provider: string; model: string };
+  generateTitles: boolean;
 };
 
 const DEFAULT_TEST_CONFIG: TestConfig = {
   provider: "default-provider",
   model: "default-model",
   cheap: { provider: "default-provider", model: "default-model" },
+  generateTitles: false,
 };
 
 const DEFAULT_TEST_PROVIDER = {

@@ -9,6 +9,7 @@ export const configSchema = z.object({
     provider: z.string(),
     model: z.string(),
   }),
+  generateTitles: z.boolean(),
 });
 
 export type Config = z.infer<typeof configSchema>;
@@ -17,6 +18,7 @@ const defaultConfig: Config = {
   provider: "",
   model: "",
   cheap: { provider: "", model: "" },
+  generateTitles: false,
 };
 
 export const readConfig = async (): Promise<Config> => {
