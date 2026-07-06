@@ -5,6 +5,10 @@ import { configPath } from "../paths";
 export const configSchema = z.object({
   provider: z.string(),
   model: z.string(),
+  cheap: z.object({
+    provider: z.string(),
+    model: z.string(),
+  }),
 });
 
 export type Config = z.infer<typeof configSchema>;
@@ -12,6 +16,7 @@ export type Config = z.infer<typeof configSchema>;
 const defaultConfig: Config = {
   provider: "",
   model: "",
+  cheap: { provider: "", model: "" },
 };
 
 export const readConfig = async (): Promise<Config> => {

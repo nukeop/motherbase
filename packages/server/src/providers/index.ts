@@ -20,5 +20,6 @@ export const registerProvider = (provider: Provider): void => {
 };
 
 export type { ModelInfo, ModelPricing } from "@motherbase/core";
+export { createCheapModel } from "./cheap";
 export { readConfig } from "./config";
 export type { Provider } from "./types";

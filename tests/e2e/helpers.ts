@@ -5,11 +5,13 @@ export const SERVER_URL = "http://localhost:4800";
 type TestConfig = {
   provider: string;
   model: string;
+  cheap: { provider: string; model: string };
 };
 
 const DEFAULT_TEST_CONFIG: TestConfig = {
   provider: "default-provider",
   model: "default-model",
+  cheap: { provider: "default-provider", model: "default-model" },
 };
 
 const DEFAULT_TEST_PROVIDER = {
