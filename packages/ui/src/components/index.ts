@@ -8,6 +8,7 @@ export {
 export { Conversation } from "./Conversation";
 export { ErrorMessage } from "./ErrorMessage";
 export { Markdown } from "./Markdown";
+export { PathBreadcrumbs } from "./PathBreadcrumbs";
 export { type ModelData, PromptInput } from "./PromptInput";
 export { Select, type SelectItem } from "./Select";
 export { SessionList, type SessionListItem } from "./SessionList";
