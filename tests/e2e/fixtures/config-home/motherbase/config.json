@@ -1,0 +1,9 @@
+{
+  "provider": "default-provider",
+  "model": "default-model",
+  "cheap": {
+    "provider": "default-provider",
+    "model": "cheap-model"
+  },
+  "generateTitles": false
+}

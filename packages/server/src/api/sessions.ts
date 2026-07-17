@@ -5,7 +5,8 @@ import { streamSSE } from "hono/streaming";
 import { createModelClient } from "../agent/model-client";
 import { Runner } from "../agent/runner";
 import { getTools } from "../agent/tools/registry";
-import { getProvider } from "../providers";
+import { DEFAULT_SESSION_TITLE } from "../database/schema";
+import { createCheapModel, getProvider } from "../providers";
 import { readConfig } from "../providers/config";
 import {
   createSession,
@@ -14,6 +15,7 @@ import {
   listSessions,
   updateSession,
 } from "../sessions/store";
+import { generateSessionTitle } from "../sessions/title";
 import { EventStream } from "../sse/event-stream";
 import { emitToSession, sessionSource } from "../sse/sources/session";
 import { requireSession } from "./middleware";
@@ -72,10 +74,11 @@ export const sessionsApi = new Hono()
       );
       const model = createModelClient(languageModel);
 
+      const { text } = ctx.req.valid("json");
       const userMessage: MessageEntry = {
         kind: "message",
         role: "user",
-        parts: [{ type: "text", text: ctx.req.valid("json").text }],
+        parts: [{ type: "text", text }],
       };
 
       const runner = new Runner(session.id, {
@@ -85,6 +88,16 @@ export const sessionsApi = new Hono()
       });
 
       runner.send(userMessage);
+
+      const config = await readConfig();
+      const needsTitle =
+        config.generateTitles && session.title === DEFAULT_SESSION_TITLE;
+      if (needsTitle) {
+        generateSessionTitle(session.id, text, {
+          model: createCheapModel,
+          emit: (event) => emitToSession(session.id, event),
+        });
+      }
 
       return ctx.json(userMessage);
     },

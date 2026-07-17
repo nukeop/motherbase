@@ -3,7 +3,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { BASE_URL, client } from "../api/client";
 
-import { sessionKey } from "./query-keys";
+import { sessionKey, sessionsKey } from "./query-keys";
 
 // Typed by hand: Hono RPC inference hits TS2589 on the recursive HistoryEntry.
 type SessionResponse = {
@@ -65,6 +65,11 @@ export const useSession = (sessionId: string) => {
     source.addEventListener("turn-completed", () => {
       setStreamingParts(null);
       queryClient.invalidateQueries({ queryKey: sessionKey(sessionId) });
+    });
+
+    source.addEventListener("title-updated", () => {
+      queryClient.invalidateQueries({ queryKey: sessionKey(sessionId) });
+      queryClient.invalidateQueries({ queryKey: sessionsKey });
     });
 
     return () => {

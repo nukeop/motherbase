@@ -43,6 +43,7 @@ export const listSessions = () =>
 type UpdateSessionParams = {
   providerId?: string;
   modelId?: string;
+  title?: string;
 };
 
 export const updateSession = (id: string, params: UpdateSessionParams) =>

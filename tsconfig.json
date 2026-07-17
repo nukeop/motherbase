@@ -1,4 +1,5 @@
 {
+  "files": ["types/text-imports.d.ts"],
   "compilerOptions": {
     // Environment setup & latest features
     "lib": ["ESNext"],

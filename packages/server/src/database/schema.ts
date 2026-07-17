@@ -8,11 +8,13 @@ import {
   uniqueIndex,
 } from "drizzle-orm/sqlite-core";
 
+export const DEFAULT_SESSION_TITLE = "New session";
+
 export const session = sqliteTable("session", {
   id: text("id").primaryKey(),
   projectId: text("project_id").notNull(),
   parentSessionId: text("parent_session_id"),
-  title: text("title").notNull().default("New session"),
+  title: text("title").notNull().default(DEFAULT_SESSION_TITLE),
   providerId: text("provider_id").notNull(),
   modelId: text("model_id").notNull(),
   createdAt: integer("created_at").notNull(),

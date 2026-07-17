@@ -25,6 +25,10 @@ export const errorSchema = z.object({
 export const turnCompletedSchema = z.object({
   type: z.literal("turn-completed"),
 });
+export const titleUpdatedSchema = z.object({
+  type: z.literal("title-updated"),
+  title: z.string(),
+});
 
 export const agentEventSchema = z.discriminatedUnion("type", [
   messageInProgressSchema,
@@ -32,6 +36,7 @@ export const agentEventSchema = z.discriminatedUnion("type", [
   toolResultEventSchema,
   errorSchema,
   turnCompletedSchema,
+  titleUpdatedSchema,
 ]);
 
 export type AgentEvent = z.infer<typeof agentEventSchema>;
