@@ -21,6 +21,23 @@ All from repo root. Package manager is **bun**.
 - `bun run test:e2e` - Playwright e2e tests
 - `bun run test:coverage` - unit tests with coverage
 
+## React components
+
+Use this style:
+
+```
+
+type ThingProps = {
+  something: string;
+  anotherThing: number;
+}
+
+const Thing: FC<ThingProps> = ({ something, anotherThing }) => {
+  ...
+}
+
+```
+
 ## Testing
 
 ### Unit tests
