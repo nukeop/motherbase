@@ -1,5 +1,6 @@
 export { AppShell } from "./AppShell";
 export { AssistantMessage } from "./AssistantMessage";
+export { Button } from "./Button";
 export { ComboBox, type ComboBoxItem } from "./ComboBox";
 export {
   ConnectionIndicator,
@@ -18,6 +19,7 @@ export {
   ReadToolResult,
   resolveCallWidget,
   resolveResultWidget,
+  ToolApproval,
   type ToolCallWidgetProps,
   ToolErrorBlock,
   type ToolResultWidgetProps,

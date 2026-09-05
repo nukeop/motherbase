@@ -1,4 +1,9 @@
-import { ReadToolCall, ToolErrorBlock, ToolResultBlock } from "@motherbase/ui";
+import {
+  ReadToolCall,
+  ToolApproval,
+  ToolErrorBlock,
+  ToolResultBlock,
+} from "@motherbase/ui";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
 const meta: Meta<typeof ReadToolCall> = {
@@ -52,6 +57,20 @@ export const ToolCrash: Story = {
       <ToolErrorBlock
         outcome="crash"
         output="they played us like a damn fiddle!"
+      />
+    </div>
+  ),
+};
+
+export const Approval: Story = {
+  render: () => (
+    <div className="w-200 bg-cream p-4">
+      <ToolApproval
+        toolName="read"
+        path="/tmp/build/cache.json"
+        onAllowOnce={() => {}}
+        onAllowAlways={() => {}}
+        onDeny={() => {}}
       />
     </div>
   ),
