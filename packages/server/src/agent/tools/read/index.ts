@@ -17,6 +17,7 @@ export const createReadTool = ({
   name: "read",
   description: prompt,
   inputSchema: readToolInputSchema,
+  claimedPath: (raw) => (raw as ReadToolInput).filePath,
   execute: async (raw) => {
     const input = raw as ReadToolInput;
     const result = await readPath(fs, input.filePath, {

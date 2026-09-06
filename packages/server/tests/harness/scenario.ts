@@ -52,6 +52,7 @@ export class Scenario {
     this.#runner = new Runner(this.session.id, {
       model: createModelClient(createMockModel(() => this.#nextStream())),
       tools: () => this.#tools,
+      authorize: async () => {},
       emit: (event) => this.events.push(event),
     });
     await this.#runner.send({

@@ -1,8 +1,13 @@
 import { zValidator } from "@hono/zod-validator";
-import type { MessageEntry } from "@motherbase/core";
+import {
+  type AgentEvent,
+  type MessageEntry,
+  permissionReplySchema,
+} from "@motherbase/core";
 import { Hono } from "hono";
 import { streamSSE } from "hono/streaming";
 import { createModelClient } from "../agent/model-client";
+import { createAuthorizer, reply } from "../agent/permissions";
 import { Runner } from "../agent/runner";
 import { getTools } from "../agent/tools/registry";
 import { DEFAULT_SESSION_TITLE } from "../database/schema";
@@ -87,10 +92,16 @@ export const sessionsApi = new Hono()
         parts: [{ type: "text", text }],
       };
 
+      const emit = (event: AgentEvent) => emitToSession(session.id, event);
       const runner = new Runner(session.id, {
         model,
         tools: () => getTools(),
-        emit: (event) => emitToSession(session.id, event),
+        authorize: createAuthorizer({
+          sessionId: session.id,
+          directory: session.directory,
+          emit,
+        }),
+        emit,
       });
 
       runner.send(userMessage);
@@ -106,6 +117,18 @@ export const sessionsApi = new Hono()
       }
 
       return ctx.json(userMessage);
+    },
+  )
+  .post(
+    "/:id/permissions/:requestId",
+    requireSession,
+    zValidator("json", permissionReplySchema),
+    (ctx) => {
+      const settled = reply(ctx.req.param("requestId"), ctx.req.valid("json"));
+      if (!settled) {
+        return ctx.json({ error: "No such pending permission request" }, 404);
+      }
+      return ctx.body(null, 204);
     },
   )
   .get("/:id/events", requireSession, (ctx) => {

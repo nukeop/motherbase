@@ -5,6 +5,7 @@ export type ToolDefinition = {
   name: string;
   description: string;
   inputSchema: z.ZodType;
+  claimedPath?: (input: unknown) => string;
   execute: (input: unknown) => Promise<JsonValue>;
 };
 

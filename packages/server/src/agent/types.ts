@@ -7,6 +7,7 @@ import type {
 import type { MessageDraft } from "./message-draft";
 import type { FinishReason } from "./model-chunk";
 import type { ModelClient } from "./model-client";
+import type { Authorize } from "./permissions";
 import type { ToolDefinition } from "./tools/definition";
 
 export type StateHandler = (
@@ -20,6 +21,7 @@ export type RunContext = {
   userMessage: MessageEntry;
   modelContext: ModelEntry[];
   tools: readonly ToolDefinition[];
+  authorize: Authorize;
   draft: MessageDraft | null;
   finishReason: FinishReason | null;
   reply: MessageEntry | null;

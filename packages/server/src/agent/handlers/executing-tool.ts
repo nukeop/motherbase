@@ -8,6 +8,7 @@ import {
 } from "@motherbase/core";
 import { z } from "zod";
 import { appendEntry } from "../../sessions/store";
+import type { Authorize } from "../permissions";
 import { type ToolDefinition, ToolError } from "../tools/definition";
 import type { StateHandler } from "../types";
 
@@ -22,7 +23,7 @@ export const executingTool: StateHandler = async (ctx) => {
 
   const calls = ctx.reply.parts.filter((part) => part.type === "tool-call");
   for (const call of calls) {
-    const result = await executeCall(ctx.tools, call);
+    const result = await executeCall(ctx.tools, ctx.authorize, call);
     appendEntry(ctx.sessionId, result);
     ctx.emit({ type: "tool-result", result });
   }
@@ -32,6 +33,7 @@ export const executingTool: StateHandler = async (ctx) => {
 
 const executeCall = async (
   tools: readonly ToolDefinition[],
+  authorize: Authorize,
   call: ToolCallPart,
 ): Promise<ToolResultEntry> => {
   const tool = tools.find((candidate) => candidate.name === call.toolName);
@@ -45,6 +47,9 @@ const executeCall = async (
   }
 
   try {
+    if (tool.claimedPath) {
+      await authorize(call.toolName, tool.claimedPath(parsed.data));
+    }
     return toResult(call, "success", await tool.execute(parsed.data));
   } catch (err) {
     if (err instanceof ToolError) {

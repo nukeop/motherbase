@@ -12,6 +12,7 @@ import { messageReceived } from "./handlers/message-received";
 import { preparingContext } from "./handlers/preparing-context";
 import { streaming } from "./handlers/streaming";
 import type { ModelClient } from "./model-client";
+import type { Authorize } from "./permissions";
 import type { ToolDefinition } from "./tools/definition";
 import type { RunContext, StateHandler } from "./types";
 
@@ -29,6 +30,7 @@ const handlers: Record<HandlerState, StateHandler> = {
 export type Deps = {
   model: ModelClient;
   tools: () => readonly ToolDefinition[];
+  authorize: Authorize;
   emit: (event: AgentEvent) => void;
 };
 
@@ -52,6 +54,7 @@ export class Runner {
       userMessage,
       modelContext: [],
       tools: this.deps.tools(),
+      authorize: this.deps.authorize,
       draft: null,
       finishReason: null,
       reply: null,
