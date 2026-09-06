@@ -7,6 +7,7 @@ import { permissions } from "../agent/permissions";
 import { Runner } from "../agent/runner";
 import { getTools } from "../agent/tools/registry";
 import { DEFAULT_SESSION_TITLE } from "../database/schema";
+import { bus } from "../events";
 import { createCheapModel, getProvider } from "../providers";
 import { readConfig } from "../providers/config";
 import {
@@ -113,14 +114,11 @@ export const sessionsApi = new Hono()
     requireSession,
     zValidator("json", permissionReplySchema),
     (ctx) => {
-      const outcome = permissions.find(ctx.var.session.id)?.reply(
-        ctx.req.param("requestId"),
-        ctx.req.valid("json"),
-      );
-      if (!outcome) {
-        return ctx.json({ error: "No such pending permission request" }, 404);
-      }
-      return ctx.json(outcome);
+      bus.emit(ctx.var.session.id, "permission-replied", {
+        requestId: ctx.req.param("requestId"),
+        reply: ctx.req.valid("json"),
+      });
+      return ctx.body(null, 204);
     },
   )
   .get("/:id/events", requireSession, (ctx) => {

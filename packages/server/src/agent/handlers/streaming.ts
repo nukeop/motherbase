@@ -12,8 +12,7 @@ export const streaming: StateHandler = async (ctx) => {
         continue;
       }
       draft.push(chunk);
-      bus.emit(ctx.sessionId, {
-        type: "message-in-progress",
+      bus.emit(ctx.sessionId, "message-in-progress", {
         parts: draft.parts.map((part) => ({ ...part })),
       });
     }

@@ -19,7 +19,7 @@ export const error: StateHandler = async (ctx) => {
     message: ctx.error!.message,
   };
   appendEntry(ctx.sessionId, entry);
-  bus.emit(ctx.sessionId, { type: "error", error: entry });
+  bus.emit(ctx.sessionId, "error", { error: entry });
 
   return null;
 };

@@ -25,7 +25,7 @@ export const executingTool: StateHandler = async (ctx) => {
   for (const call of calls) {
     const result = await executeCall(ctx.tools, ctx.authorize, call);
     appendEntry(ctx.sessionId, result);
-    bus.emit(ctx.sessionId, { type: "tool-result", result });
+    bus.emit(ctx.sessionId, "tool-result", { result });
   }
 
   return { type: "preparing-context" };

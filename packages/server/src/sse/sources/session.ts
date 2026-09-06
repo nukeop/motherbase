@@ -4,4 +4,6 @@ import type { StreamSource } from "../types";
 export const sessionSource =
   (sessionId: string): StreamSource =>
   (write) =>
-    bus.on(sessionId, (event) => write(event.type, event));
+    bus.on(sessionId, "*", ({ name, payload }) =>
+      write(name, { type: name, ...payload }),
+    );

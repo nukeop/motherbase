@@ -20,5 +20,5 @@ export const generateSessionTitle = async (
   const title = (await result.text).trim();
 
   updateSession(sessionId, { title });
-  bus.emit(sessionId, { type: "title-updated", title });
+  bus.emit(sessionId, "title-updated", { title });
 };

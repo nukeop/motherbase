@@ -59,7 +59,7 @@ export class Runner {
     };
 
     await this.run({ type: "message-received" }, ctx);
-    bus.emit(this.sessionId, { type: "turn-completed" });
+    bus.emit(this.sessionId, "turn-completed", {});
   }
 
   private async run(

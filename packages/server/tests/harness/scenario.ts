@@ -55,7 +55,9 @@ export class Scenario {
       tools: () => this.#tools,
       authorize: async () => {},
     });
-    const off = bus.on(this.session.id, (event) => this.events.push(event));
+    const off = bus.on(this.session.id, "*", ({ name, payload }) =>
+      this.events.push({ type: name, ...payload } as AgentEvent),
+    );
     try {
       await this.#runner.send({
         kind: "message",
