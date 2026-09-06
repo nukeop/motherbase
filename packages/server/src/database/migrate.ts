@@ -18,7 +18,7 @@ export const migrate = (sqlite: Database) => {
       id TEXT PRIMARY KEY,
       session_id TEXT NOT NULL REFERENCES session(id),
       seq INTEGER NOT NULL,
-      kind TEXT NOT NULL CHECK (kind IN ('message', 'error', 'tool-result')),
+      kind TEXT NOT NULL CHECK (kind IN ('message', 'error', 'tool-result', 'permission-request', 'permission-reply')),
       role TEXT CHECK (role IS NULL OR role IN ('user', 'assistant')),
       data TEXT NOT NULL,
       created_at INTEGER NOT NULL

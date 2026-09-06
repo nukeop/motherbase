@@ -31,7 +31,15 @@ export const entry = sqliteTable(
       .notNull()
       .references(() => session.id, { onDelete: "cascade" }),
     seq: integer("seq").notNull(),
-    kind: text("kind", { enum: ["message", "error", "tool-result"] }).notNull(),
+    kind: text("kind", {
+      enum: [
+        "message",
+        "error",
+        "tool-result",
+        "permission-request",
+        "permission-reply",
+      ],
+    }).notNull(),
     role: text("role", { enum: ["user", "assistant"] }),
     data: text("data").notNull(),
     createdAt: integer("created_at").notNull(),
@@ -40,7 +48,7 @@ export const entry = sqliteTable(
     uniqueIndex("entry_session_seq_idx").on(table.sessionId, table.seq),
     check(
       "entry_kind_check",
-      sql`${table.kind} IN ('message', 'error', 'tool-result')`,
+      sql`${table.kind} IN ('message', 'error', 'tool-result', 'permission-request', 'permission-reply')`,
     ),
     check(
       "entry_role_check",

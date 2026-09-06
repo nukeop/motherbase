@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { jsonValueSchema } from "./json";
+import { permissionOutcomeSchema, permissionRequestSchema } from "./permission";
 
 export const toolCallPartSchema = z.object({
   type: z.literal("tool-call"),
@@ -40,10 +41,23 @@ export const toolResultEntrySchema = z.object({
   outcome: toolOutcomeSchema,
 });
 
+export const permissionRequestEntrySchema = z.object({
+  kind: z.literal("permission-request"),
+  request: permissionRequestSchema,
+});
+
+export const permissionReplyEntrySchema = z.object({
+  kind: z.literal("permission-reply"),
+  requestId: z.string(),
+  outcome: permissionOutcomeSchema,
+});
+
 export const historyEntrySchema = z.discriminatedUnion("kind", [
   messageEntrySchema,
   errorEntrySchema,
   toolResultEntrySchema,
+  permissionRequestEntrySchema,
+  permissionReplyEntrySchema,
 ]);
 
 export type ToolCallPart = z.infer<typeof toolCallPartSchema>;
@@ -54,6 +68,10 @@ export type ErrorOrigin = z.infer<typeof errorOriginSchema>;
 export type ErrorEntry = z.infer<typeof errorEntrySchema>;
 export type ToolOutcome = z.infer<typeof toolOutcomeSchema>;
 export type ToolResultEntry = z.infer<typeof toolResultEntrySchema>;
+export type PermissionRequestEntry = z.infer<
+  typeof permissionRequestEntrySchema
+>;
+export type PermissionReplyEntry = z.infer<typeof permissionReplyEntrySchema>;
 export type HistoryEntry = z.infer<typeof historyEntrySchema>;
 
 export type ModelEntry = MessageEntry | ToolResultEntry;

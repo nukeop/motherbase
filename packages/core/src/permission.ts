@@ -32,8 +32,9 @@ export const permissionRepliedSchema = z.object({
 });
 export type PermissionReplied = z.infer<typeof permissionRepliedSchema>;
 
-export const permissionOutcomeSchema = z.object({
-  decision: decisionSchema,
-  granted: claimSchema.nullable(),
-});
+export const permissionOutcomeSchema = z.discriminatedUnion("decision", [
+  z.object({ decision: z.literal("always"), granted: claimSchema }),
+  z.object({ decision: z.literal("once"), granted: z.null() }),
+  z.object({ decision: z.literal("deny"), granted: z.null() }),
+]);
 export type PermissionOutcome = z.infer<typeof permissionOutcomeSchema>;
