@@ -26,6 +26,12 @@ export const permissionReplySchema = z.discriminatedUnion("decision", [
 ]);
 export type PermissionReply = z.infer<typeof permissionReplySchema>;
 
+export const permissionRepliedSchema = z.object({
+  requestId: z.string(),
+  reply: permissionReplySchema,
+});
+export type PermissionReplied = z.infer<typeof permissionRepliedSchema>;
+
 export const permissionOutcomeSchema = z.object({
   decision: decisionSchema,
   granted: claimSchema.nullable(),

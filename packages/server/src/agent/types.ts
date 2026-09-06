@@ -1,5 +1,4 @@
 import type {
-  AgentEvent,
   Claim,
   HandlerState,
   MessageEntry,
@@ -19,7 +18,6 @@ export type StateHandler = (
 export type RunContext = {
   sessionId: string;
   model: ModelClient;
-  emit: (event: AgentEvent) => void;
   userMessage: MessageEntry;
   modelContext: ModelEntry[];
   tools: readonly ToolDefinition[];

@@ -4,6 +4,7 @@ import type { ModelChunk } from "../../src/agent/model-chunk";
 import { createModelClient } from "../../src/agent/model-client";
 import { Runner } from "../../src/agent/runner";
 import type { ToolDefinition } from "../../src/agent/tools/definition";
+import { bus } from "../../src/events";
 import { createSession, getHistory } from "../../src/sessions/store";
 import {
   createMockModel,
@@ -53,13 +54,17 @@ export class Scenario {
       model: createModelClient(createMockModel(() => this.#nextStream())),
       tools: () => this.#tools,
       authorize: async () => {},
-      emit: (event) => this.events.push(event),
     });
-    await this.#runner.send({
-      kind: "message",
-      role: "user",
-      parts: [{ type: "text", text }],
-    });
+    const off = bus.on(this.session.id, (event) => this.events.push(event));
+    try {
+      await this.#runner.send({
+        kind: "message",
+        role: "user",
+        parts: [{ type: "text", text }],
+      });
+    } finally {
+      off();
+    }
   }
 
   #nextStream(): ReadableStream<LanguageModelV3StreamPart> {

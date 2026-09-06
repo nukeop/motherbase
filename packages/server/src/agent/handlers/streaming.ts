@@ -1,4 +1,5 @@
 import { toError } from "@motherbase/core";
+import { bus } from "../../events";
 import type { StateHandler } from "../types";
 
 export const streaming: StateHandler = async (ctx) => {
@@ -11,7 +12,7 @@ export const streaming: StateHandler = async (ctx) => {
         continue;
       }
       draft.push(chunk);
-      ctx.emit({
+      bus.emit(ctx.sessionId, {
         type: "message-in-progress",
         parts: draft.parts.map((part) => ({ ...part })),
       });

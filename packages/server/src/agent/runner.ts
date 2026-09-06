@@ -1,10 +1,10 @@
 import { getLogger } from "@logtape/logtape";
 import type {
-  AgentEvent,
   HandlerState,
   MachineState,
   MessageEntry,
 } from "@motherbase/core";
+import { bus } from "../events";
 import { completing } from "./handlers/completing";
 import { error } from "./handlers/error";
 import { executingTool } from "./handlers/executing-tool";
@@ -30,7 +30,6 @@ export type Deps = {
   model: ModelClient;
   tools: () => readonly ToolDefinition[];
   authorize: Authorize;
-  emit: (event: AgentEvent) => void;
 };
 
 export class Runner {
@@ -49,7 +48,6 @@ export class Runner {
     const ctx: RunContext = {
       sessionId: this.sessionId,
       model: this.deps.model,
-      emit: this.deps.emit,
       userMessage,
       modelContext: [],
       tools: this.deps.tools(),
@@ -61,7 +59,7 @@ export class Runner {
     };
 
     await this.run({ type: "message-received" }, ctx);
-    this.deps.emit({ type: "turn-completed" });
+    bus.emit(this.sessionId, { type: "turn-completed" });
   }
 
   private async run(

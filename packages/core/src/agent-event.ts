@@ -5,7 +5,10 @@ import {
   messagePartSchema,
   toolResultEntrySchema,
 } from "./history";
-import { permissionRequestSchema } from "./permission";
+import {
+  permissionOutcomeSchema,
+  permissionRequestSchema,
+} from "./permission";
 
 export const messageInProgressSchema = z.object({
   type: z.literal("message-in-progress"),
@@ -34,6 +37,11 @@ export const permissionRequestedSchema = z.object({
   type: z.literal("permission-requested"),
   request: permissionRequestSchema,
 });
+export const permissionResolvedSchema = z.object({
+  type: z.literal("permission-resolved"),
+  requestId: z.string(),
+  outcome: permissionOutcomeSchema,
+});
 
 export const agentEventSchema = z.discriminatedUnion("type", [
   messageInProgressSchema,
@@ -43,6 +51,7 @@ export const agentEventSchema = z.discriminatedUnion("type", [
   turnCompletedSchema,
   titleUpdatedSchema,
   permissionRequestedSchema,
+  permissionResolvedSchema,
 ]);
 
 export type AgentEvent = z.infer<typeof agentEventSchema>;

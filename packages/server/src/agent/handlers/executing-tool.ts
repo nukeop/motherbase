@@ -9,6 +9,7 @@ import {
 import { z } from "zod";
 import { appendEntry } from "../../sessions/store";
 import { type ToolDefinition, ToolError } from "../tools/definition";
+import { bus } from "../../events";
 import type { Authorize, StateHandler } from "../types";
 
 const logger = getLogger(["Motherbase", "Agent", "ExecutingTool"]);
@@ -24,7 +25,7 @@ export const executingTool: StateHandler = async (ctx) => {
   for (const call of calls) {
     const result = await executeCall(ctx.tools, ctx.authorize, call);
     appendEntry(ctx.sessionId, result);
-    ctx.emit({ type: "tool-result", result });
+    bus.emit(ctx.sessionId, { type: "tool-result", result });
   }
 
   return { type: "preparing-context" };

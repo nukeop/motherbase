@@ -1,11 +1,10 @@
-import type { AgentEvent } from "@motherbase/core";
 import { type LanguageModel, streamText } from "ai";
+import { bus } from "../events";
 import { updateSession } from "./store";
 import systemPrompt from "./title-prompt.md" with { type: "text" };
 
 type Deps = {
   model: () => Promise<LanguageModel>;
-  emit: (event: AgentEvent) => void;
 };
 
 export const generateSessionTitle = async (
@@ -21,5 +20,5 @@ export const generateSessionTitle = async (
   const title = (await result.text).trim();
 
   updateSession(sessionId, { title });
-  deps.emit({ type: "title-updated", title });
+  bus.emit(sessionId, { type: "title-updated", title });
 };

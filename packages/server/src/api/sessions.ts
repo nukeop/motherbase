@@ -1,9 +1,5 @@
 import { zValidator } from "@hono/zod-validator";
-import {
-  type AgentEvent,
-  type MessageEntry,
-  permissionReplySchema,
-} from "@motherbase/core";
+import { type MessageEntry, permissionReplySchema } from "@motherbase/core";
 import { Hono } from "hono";
 import { streamSSE } from "hono/streaming";
 import { createModelClient } from "../agent/model-client";
@@ -22,7 +18,7 @@ import {
 } from "../sessions/store";
 import { generateSessionTitle } from "../sessions/title";
 import { EventStream } from "../sse/event-stream";
-import { emitToSession, sessionSource } from "../sse/sources/session";
+import { sessionSource } from "../sse/sources/session";
 import { requireSession } from "./middleware";
 import {
   createSessionSchema,
@@ -92,14 +88,12 @@ export const sessionsApi = new Hono()
         parts: [{ type: "text", text }],
       };
 
-      const emit = (event: AgentEvent) => emitToSession(session.id, event);
-      const sessionPermissions = permissions.forSession(session, emit);
+      const sessionPermissions = permissions.forSession(session);
       const runner = new Runner(session.id, {
         model,
         tools: () => getTools(),
         authorize: (toolName, claim) =>
           sessionPermissions.authorize(toolName, claim),
-        emit,
       });
 
       runner.send(userMessage);
@@ -108,10 +102,7 @@ export const sessionsApi = new Hono()
       const needsTitle =
         config.generateTitles && session.title === DEFAULT_SESSION_TITLE;
       if (needsTitle) {
-        generateSessionTitle(session.id, text, {
-          model: createCheapModel,
-          emit: (event) => emitToSession(session.id, event),
-        });
+        generateSessionTitle(session.id, text, { model: createCheapModel });
       }
 
       return ctx.json(userMessage);
