@@ -7,7 +7,7 @@ import {
 import { Hono } from "hono";
 import { streamSSE } from "hono/streaming";
 import { createModelClient } from "../agent/model-client";
-import { createAuthorizer, reply } from "../agent/permissions";
+import { permissions } from "../agent/permissions";
 import { Runner } from "../agent/runner";
 import { getTools } from "../agent/tools/registry";
 import { DEFAULT_SESSION_TITLE } from "../database/schema";
@@ -93,14 +93,12 @@ export const sessionsApi = new Hono()
       };
 
       const emit = (event: AgentEvent) => emitToSession(session.id, event);
+      const sessionPermissions = permissions.forSession(session, emit);
       const runner = new Runner(session.id, {
         model,
         tools: () => getTools(),
-        authorize: createAuthorizer({
-          sessionId: session.id,
-          directory: session.directory,
-          emit,
-        }),
+        authorize: (toolName, claim) =>
+          sessionPermissions.authorize(toolName, claim),
         emit,
       });
 
@@ -124,11 +122,14 @@ export const sessionsApi = new Hono()
     requireSession,
     zValidator("json", permissionReplySchema),
     (ctx) => {
-      const settled = reply(ctx.req.param("requestId"), ctx.req.valid("json"));
-      if (!settled) {
+      const outcome = permissions.find(ctx.var.session.id)?.reply(
+        ctx.req.param("requestId"),
+        ctx.req.valid("json"),
+      );
+      if (!outcome) {
         return ctx.json({ error: "No such pending permission request" }, 404);
       }
-      return ctx.body(null, 204);
+      return ctx.json(outcome);
     },
   )
   .get("/:id/events", requireSession, (ctx) => {

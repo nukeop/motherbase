@@ -8,9 +8,8 @@ import {
 } from "@motherbase/core";
 import { z } from "zod";
 import { appendEntry } from "../../sessions/store";
-import type { Authorize } from "../permissions";
 import { type ToolDefinition, ToolError } from "../tools/definition";
-import type { StateHandler } from "../types";
+import type { Authorize, StateHandler } from "../types";
 
 const logger = getLogger(["Motherbase", "Agent", "ExecutingTool"]);
 
@@ -47,8 +46,8 @@ const executeCall = async (
   }
 
   try {
-    if (tool.claimedPath) {
-      await authorize(call.toolName, tool.claimedPath(parsed.data));
+    if (tool.claim) {
+      await authorize(call.toolName, tool.claim(parsed.data));
     }
     return toResult(call, "success", await tool.execute(parsed.data));
   } catch (err) {

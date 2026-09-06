@@ -1,5 +1,6 @@
 import type {
   AgentEvent,
+  Claim,
   HandlerState,
   MessageEntry,
   ModelEntry,
@@ -7,8 +8,9 @@ import type {
 import type { MessageDraft } from "./message-draft";
 import type { FinishReason } from "./model-chunk";
 import type { ModelClient } from "./model-client";
-import type { Authorize } from "./permissions";
 import type { ToolDefinition } from "./tools/definition";
+
+export type Authorize = (toolName: string, claim: Claim) => Promise<void>;
 
 export type StateHandler = (
   ctx: RunContext,

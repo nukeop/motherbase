@@ -1,11 +1,11 @@
-import type { JsonValue } from "@motherbase/core";
+import type { Claim, JsonValue } from "@motherbase/core";
 import type { z } from "zod";
 
 export type ToolDefinition = {
   name: string;
   description: string;
   inputSchema: z.ZodType;
-  claimedPath?: (input: unknown) => string;
+  claim?: (input: unknown) => Claim;
   execute: (input: unknown) => Promise<JsonValue>;
 };
 

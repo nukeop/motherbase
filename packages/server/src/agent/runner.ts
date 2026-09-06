@@ -12,9 +12,8 @@ import { messageReceived } from "./handlers/message-received";
 import { preparingContext } from "./handlers/preparing-context";
 import { streaming } from "./handlers/streaming";
 import type { ModelClient } from "./model-client";
-import type { Authorize } from "./permissions";
 import type { ToolDefinition } from "./tools/definition";
-import type { RunContext, StateHandler } from "./types";
+import type { Authorize, RunContext, StateHandler } from "./types";
 
 const logger = getLogger(["Motherbase", "Agent", "Runner"]);
 
