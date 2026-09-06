@@ -14,6 +14,7 @@ export const session = sqliteTable("session", {
   id: text("id").primaryKey(),
   projectId: text("project_id").notNull(),
   parentSessionId: text("parent_session_id"),
+  directory: text("directory"),
   title: text("title").notNull().default(DEFAULT_SESSION_TITLE),
   providerId: text("provider_id").notNull(),
   modelId: text("model_id").notNull(),

@@ -6,6 +6,7 @@ export const migrate = (sqlite: Database) => {
       id TEXT PRIMARY KEY,
       project_id TEXT NOT NULL,
       parent_session_id TEXT,
+      directory TEXT,
       title TEXT NOT NULL DEFAULT 'New session',
       provider_id TEXT NOT NULL,
       model_id TEXT NOT NULL,

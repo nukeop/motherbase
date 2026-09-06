@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { client } from "../api/client";
+import { client, unwrap } from "../api/client";
 import { sessionsKey } from "./query-keys";
 
 export const useSessions = () => {
@@ -14,9 +14,9 @@ export const useSessions = () => {
   });
 
   const createSession = useMutation({
-    mutationFn: async () => {
-      const response = await client.sessions.$post();
-      return response.json();
+    mutationFn: async (directory?: string) => {
+      const response = await client.sessions.$post({ json: { directory } });
+      return unwrap(response).json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: sessionsKey });

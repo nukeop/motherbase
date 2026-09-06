@@ -19,18 +19,24 @@ import { generateSessionTitle } from "../sessions/title";
 import { EventStream } from "../sse/event-stream";
 import { emitToSession, sessionSource } from "../sse/sources/session";
 import { requireSession } from "./middleware";
-import { sendMessageSchema, sessionParamsSchema } from "./session-schemas";
+import {
+  createSessionSchema,
+  sendMessageSchema,
+  sessionParamsSchema,
+} from "./session-schemas";
 
 // TODO: this should be gone once I introduce the concept of projects. Placeholder
 const DEFAULT_PROJECT_ID = "default";
 
 export const sessionsApi = new Hono()
-  .post("/", async (ctx) => {
+  .post("/", zValidator("json", createSessionSchema), async (ctx) => {
     const defaults = await readConfig();
+    const { directory } = ctx.req.valid("json");
     const session = createSession({
       projectId: DEFAULT_PROJECT_ID,
       providerId: defaults.provider,
       modelId: defaults.model,
+      directory,
     });
     return ctx.json(session, 201);
   })

@@ -12,6 +12,7 @@ type CreateSessionParams = {
   providerId: string;
   modelId: string;
   parentSessionId?: string;
+  directory?: string;
 };
 
 export const createSession = (params: CreateSessionParams) => {
@@ -22,6 +23,7 @@ export const createSession = (params: CreateSessionParams) => {
       id,
       projectId: params.projectId,
       parentSessionId: params.parentSessionId ?? null,
+      directory: params.directory ?? null,
       providerId: params.providerId,
       modelId: params.modelId,
       createdAt: Date.now(),
