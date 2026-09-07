@@ -316,8 +316,11 @@ describe("read tool", () => {
         role: "assistant",
         parts: [{ type: "text", text: "Done" }],
       });
-      expect(scenario.events.at(-1)).toEqual({ type: "turn-completed" });
-      expect(scenario.events.some((event) => event.type === "error")).toBe(
+      expect(scenario.events.at(-1)).toEqual({
+        name: "turn-completed",
+        payload: {},
+      });
+      expect(scenario.events.some((event) => event.name === "error")).toBe(
         false,
       );
     });

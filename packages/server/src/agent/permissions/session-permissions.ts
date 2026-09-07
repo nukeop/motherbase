@@ -2,8 +2,10 @@ import type {
   Claim,
   PermissionOutcome,
   PermissionReplied,
+  PermissionRequest,
 } from "@motherbase/core";
 import { bus } from "../../events";
+import { appendEntry } from "../../sessions/store";
 import { ToolError } from "../tools/definition";
 import { SessionGrants } from "./session-grants";
 
@@ -30,12 +32,16 @@ export class SessionPermissions {
     if (this.#grants.covers(claim)) {
       return;
     }
-    const id = crypto.randomUUID();
+    const request: PermissionRequest = {
+      id: crypto.randomUUID(),
+      toolName,
+      claim,
+    };
+    appendEntry(this.sessionId, { kind: "permission-request", request });
+
     const resolvers = Promise.withResolvers<void>();
-    this.#pending.set(id, { claim, resolvers });
-    bus.emit(this.sessionId, "permission-requested", {
-      request: { id, toolName, claim },
-    });
+    this.#pending.set(request.id, { claim, resolvers });
+    bus.emit(this.sessionId, "permission-requested", { request });
     await resolvers.promise;
   }
 
@@ -44,29 +50,42 @@ export class SessionPermissions {
     if (!pending) {
       return;
     }
-    this.#pending.delete(requestId);
 
-    const outcome = this.resolve(pending, reply);
+    const outcome = this.outcomeFor(pending, reply);
+    appendEntry(this.sessionId, {
+      kind: "permission-reply",
+      requestId,
+      outcome,
+    });
+    this.#pending.delete(requestId);
+    if (outcome.decision === "always") {
+      this.#grants.add(outcome.granted);
+    }
+    this.settlePromise(pending, outcome);
     bus.emit(this.sessionId, "permission-resolved", { requestId, outcome });
   }
 
-  private resolve(
+  private outcomeFor(
     pending: Pending,
     reply: PermissionReplied["reply"],
   ): PermissionOutcome {
     if (reply.decision === "deny") {
-      pending.resolvers.reject(
-        new ToolError("The user denied access to this path"),
-      );
       return { decision: "deny", granted: null };
     }
     if (reply.decision === "always") {
       const granted: Claim = { verb: pending.claim.verb, path: reply.prefix };
-      this.#grants.add(granted);
-      pending.resolvers.resolve();
       return { decision: "always", granted };
     }
-    pending.resolvers.resolve();
     return { decision: "once", granted: null };
+  }
+
+  private settlePromise(pending: Pending, outcome: PermissionOutcome): void {
+    if (outcome.decision === "deny") {
+      pending.resolvers.reject(
+        new ToolError("The user denied access to this path"),
+      );
+      return;
+    }
+    pending.resolvers.resolve();
   }
 }

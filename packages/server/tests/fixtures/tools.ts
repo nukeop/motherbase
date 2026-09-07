@@ -12,6 +12,27 @@ export const echoTool: ToolDefinition = {
   execute: async (input) => ({ echoed: jsonValueSchema.parse(input) }),
 };
 
+const pathInputSchema = z.object({ path: z.string() });
+
+export const claimedReadTool: ToolDefinition = {
+  name: "read",
+  description: "Reads a path requesting permission for that path",
+  inputSchema: pathInputSchema,
+  claim: (input) => ({ verb: "read", path: pathInputSchema.parse(input).path }),
+  execute: async (input) => ({ read: pathInputSchema.parse(input).path }),
+};
+
+export const claimedWriteTool: ToolDefinition = {
+  name: "write",
+  description: "Writes a path requesting permission for that path",
+  inputSchema: pathInputSchema,
+  claim: (input) => ({
+    verb: "write",
+    path: pathInputSchema.parse(input).path,
+  }),
+  execute: async (input) => ({ wrote: pathInputSchema.parse(input).path }),
+};
+
 export const toolErrorTool: ToolDefinition = {
   name: "fail",
   description: "Throws a deliberate ToolError",

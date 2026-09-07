@@ -50,24 +50,36 @@ describe("tool call turn", () => {
     };
 
     expect(scenario.events).toEqual([
-      { type: "message-in-progress", parts: [{ type: "text", text: "" }] },
       {
-        type: "message-in-progress",
-        parts: [{ type: "text", text: "Checking" }],
+        name: "message-in-progress",
+        payload: { parts: [{ type: "text", text: "" }] },
       },
       {
-        type: "message-in-progress",
-        parts: [{ type: "text", text: "Checking" }, toolCallPart],
+        name: "message-in-progress",
+        payload: {
+          parts: [{ type: "text", text: "Checking" }],
+        },
       },
-      { type: "message-completed", message: firstReply },
-      { type: "tool-result", result: toolResult },
-      { type: "message-in-progress", parts: [{ type: "text", text: "" }] },
       {
-        type: "message-in-progress",
-        parts: [{ type: "text", text: "All done" }],
+        name: "message-in-progress",
+        payload: {
+          parts: [{ type: "text", text: "Checking" }, toolCallPart],
+        },
       },
-      { type: "message-completed", message: secondReply },
-      { type: "turn-completed" },
+      { name: "message-completed", payload: { message: firstReply } },
+      { name: "tool-result", payload: { result: toolResult } },
+      {
+        name: "message-in-progress",
+        payload: { parts: [{ type: "text", text: "" }] },
+      },
+      {
+        name: "message-in-progress",
+        payload: {
+          parts: [{ type: "text", text: "All done" }],
+        },
+      },
+      { name: "message-completed", payload: { message: secondReply } },
+      { name: "turn-completed", payload: {} },
     ]);
 
     expect(scenario.runner.state).toEqual({ type: "idle" });
@@ -108,7 +120,7 @@ describe("tool call turn", () => {
       parts: [{ type: "text", text: "Recovered" }],
     });
 
-    expect(scenario.events.some((e) => e.type === "error")).toBe(false);
+    expect(scenario.events.some((e) => e.name === "error")).toBe(false);
   });
 
   test("an unexpected throw produces a crash outcome and the turn continues", async () => {
@@ -221,11 +233,11 @@ describe("tool call turn", () => {
     });
 
     const toolResultEvents = scenario.events.filter(
-      (e) => e.type === "tool-result",
+      (e) => e.name === "tool-result",
     );
     expect(toolResultEvents).toEqual([
-      { type: "tool-result", result: resultA },
-      { type: "tool-result", result: resultB },
+      { name: "tool-result", payload: { result: resultA } },
+      { name: "tool-result", payload: { result: resultB } },
     ]);
   });
 });

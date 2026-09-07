@@ -1,10 +1,16 @@
 import type { LanguageModelV3StreamPart } from "@ai-sdk/provider";
-import type { AgentEvent } from "@motherbase/core";
 import type { ModelChunk } from "../../src/agent/model-chunk";
 import { createModelClient } from "../../src/agent/model-client";
+import { SessionPermissions } from "../../src/agent/permissions/session-permissions";
 import { Runner } from "../../src/agent/runner";
 import type { ToolDefinition } from "../../src/agent/tools/definition";
+import type { Authorize } from "../../src/agent/types";
 import { bus } from "../../src/events";
+import type {
+  EventName,
+  ServerEvent,
+  ServerEvents,
+} from "../../src/events/server-events";
 import { createSession, getHistory } from "../../src/sessions/store";
 import {
   createMockModel,
@@ -18,9 +24,10 @@ export class Scenario {
     providerId: "test",
     modelId: "test-model",
   });
-  readonly events: AgentEvent[] = [];
+  readonly events: ServerEvent[] = [];
   #streamQueue: Array<() => ReadableStream<LanguageModelV3StreamPart>> = [];
   #tools: readonly ToolDefinition[] = [];
+  #permissions: SessionPermissions | null = null;
   #runner!: Runner;
 
   get runner(): Runner {
@@ -39,6 +46,19 @@ export class Scenario {
     this.#tools = tools;
   }
 
+  withPermissions(): void {
+    this.#permissions = new SessionPermissions(this.session.id, null);
+  }
+
+  waitFor<Name extends EventName>(name: Name): Promise<ServerEvents[Name]> {
+    return new Promise((resolve) => {
+      const off = bus.on(this.session.id, name, (payload) => {
+        off();
+        resolve(payload);
+      });
+    });
+  }
+
   scriptTurn(chunks: ModelChunk[]): void {
     const parts = toStreamParts(chunks);
     this.#streamQueue.push(() => createStream(parts));
@@ -53,11 +73,11 @@ export class Scenario {
     this.#runner = new Runner(this.session.id, {
       model: createModelClient(createMockModel(() => this.#nextStream())),
       tools: () => this.#tools,
-      authorize: async () => {},
+      authorize: this.#authorize(),
     });
-    const off = bus.on(this.session.id, "*", ({ name, payload }) =>
-      this.events.push({ type: name, ...payload } as AgentEvent),
-    );
+    const off = bus.on(this.session.id, "*", (event) => {
+      this.events.push(event);
+    });
     try {
       await this.#runner.send({
         kind: "message",
@@ -67,6 +87,14 @@ export class Scenario {
     } finally {
       off();
     }
+  }
+
+  #authorize(): Authorize {
+    const permissions = this.#permissions;
+    if (permissions) {
+      return (toolName, claim) => permissions.authorize(toolName, claim);
+    }
+    return async () => {};
   }
 
   #nextStream(): ReadableStream<LanguageModelV3StreamPart> {

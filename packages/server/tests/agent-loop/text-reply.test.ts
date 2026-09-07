@@ -23,18 +23,28 @@ describe("text reply turn", () => {
     };
 
     expect(scenario.events).toEqual([
-      { type: "message-in-progress", parts: [{ type: "text", text: "" }] },
-      { type: "message-in-progress", parts: [{ type: "text", text: "Hi" }] },
       {
-        type: "message-in-progress",
-        parts: [{ type: "text", text: "Hi there" }],
+        name: "message-in-progress",
+        payload: { parts: [{ type: "text", text: "" }] },
       },
       {
-        type: "message-in-progress",
-        parts: [{ type: "text", text: "Hi there!" }],
+        name: "message-in-progress",
+        payload: { parts: [{ type: "text", text: "Hi" }] },
       },
-      { type: "message-completed", message: assistantMessage },
-      { type: "turn-completed" },
+      {
+        name: "message-in-progress",
+        payload: {
+          parts: [{ type: "text", text: "Hi there" }],
+        },
+      },
+      {
+        name: "message-in-progress",
+        payload: {
+          parts: [{ type: "text", text: "Hi there!" }],
+        },
+      },
+      { name: "message-completed", payload: { message: assistantMessage } },
+      { name: "turn-completed", payload: {} },
     ]);
 
     expect(scenario.runner.state).toEqual({ type: "idle" });
@@ -80,40 +90,52 @@ describe("text reply turn", () => {
 
     expect(scenario.events).toEqual([
       {
-        type: "message-in-progress",
-        parts: [{ type: "reasoning", text: "" }],
+        name: "message-in-progress",
+        payload: {
+          parts: [{ type: "reasoning", text: "" }],
+        },
       },
       {
-        type: "message-in-progress",
-        parts: [{ type: "reasoning", text: "The user greeted me. " }],
+        name: "message-in-progress",
+        payload: {
+          parts: [{ type: "reasoning", text: "The user greeted me. " }],
+        },
       },
       {
-        type: "message-in-progress",
-        parts: [{ type: "reasoning", text: reasoning }],
+        name: "message-in-progress",
+        payload: {
+          parts: [{ type: "reasoning", text: reasoning }],
+        },
       },
       {
-        type: "message-in-progress",
-        parts: [
-          { type: "reasoning", text: reasoning },
-          { type: "text", text: "" },
-        ],
+        name: "message-in-progress",
+        payload: {
+          parts: [
+            { type: "reasoning", text: reasoning },
+            { type: "text", text: "" },
+          ],
+        },
       },
       {
-        type: "message-in-progress",
-        parts: [
-          { type: "reasoning", text: reasoning },
-          { type: "text", text: "Hey" },
-        ],
+        name: "message-in-progress",
+        payload: {
+          parts: [
+            { type: "reasoning", text: reasoning },
+            { type: "text", text: "Hey" },
+          ],
+        },
       },
       {
-        type: "message-in-progress",
-        parts: [
-          { type: "reasoning", text: reasoning },
-          { type: "text", text: "Hey!" },
-        ],
+        name: "message-in-progress",
+        payload: {
+          parts: [
+            { type: "reasoning", text: reasoning },
+            { type: "text", text: "Hey!" },
+          ],
+        },
       },
-      { type: "message-completed", message: assistantMessage },
-      { type: "turn-completed" },
+      { name: "message-completed", payload: { message: assistantMessage } },
+      { name: "turn-completed", payload: {} },
     ]);
 
     expect(scenario.messages).toEqual([
