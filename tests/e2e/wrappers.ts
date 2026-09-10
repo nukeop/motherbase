@@ -18,7 +18,11 @@ const permissionCard = (root: Locator) => ({
   allowOnceButton: root.getByRole("button", { name: "Allow once" }),
   allowAlwaysButton: root.getByRole("button", { name: "Allow always" }),
   denyButton: root.getByRole("button", { name: "Deny" }),
-  crumbs: root.getByTestId("permission-path").getByRole("button"),
+  crumb(label: string) {
+    return root
+      .getByTestId("permission-path")
+      .getByRole("button", { name: label, exact: true });
+  },
   async requestId(): Promise<string> {
     const id = await root.getAttribute("data-request-id");
     if (id === null) {
@@ -30,7 +34,7 @@ const permissionCard = (root: Locator) => ({
     await this.allowOnceButton.click();
   },
   async allowAlways(crumbLabel: string) {
-    await this.crumbs.filter({ hasText: crumbLabel }).click();
+    await this.crumb(crumbLabel).click();
     await this.allowAlwaysButton.click();
   },
   async deny() {
