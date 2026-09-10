@@ -1,40 +1,19 @@
 import { expect, test } from "@playwright/test";
-import {
-  createSession,
-  SERVER_URL,
-  selectModel,
-  selectProvider,
-  setTestConfig,
-} from "./helpers";
-
-const TEST_PROVIDER = {
-  id: "error-provider",
-  name: "Error Provider",
-  models: [{ id: "error-model", name: "Error Model" }],
-};
+import { TestBackend } from "./test-backend";
+import { setTestConfig } from "./test-config";
+import { DEFAULT_TEST_PROVIDER } from "./test-provider";
+import { composer, sidebar } from "./wrappers";
 
 test.beforeEach(async ({ page, request }) => {
   await setTestConfig(request);
-  await request.post(`${SERVER_URL}/_test/providers`, {
-    data: { providers: [TEST_PROVIDER] },
-  });
-  await request.post(`${SERVER_URL}/_test/model`, {
-    data: {
-      provider: "error-provider",
-      model: "error-model",
-      chunks: [],
-      error: "Service unavailable",
-    },
-  });
-  await createSession(page);
+  await new TestBackend(request, DEFAULT_TEST_PROVIDER).scriptFailure(
+    "Service unavailable",
+  );
+  await sidebar(page).createSession();
 });
 
 test("model error shows error message in conversation", async ({ page }) => {
-  await selectProvider(page, "Error Provider");
-  await selectModel(page, "Error Model");
-
-  await page.getByPlaceholder("Send a message...").fill("Hello");
-  await page.keyboard.press("Enter");
+  await composer(page).send("Hello");
 
   await expect(page.getByText("Hello")).toBeVisible();
   await expect(page.getByText("Service unavailable")).toBeVisible();

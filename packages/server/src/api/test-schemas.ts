@@ -1,4 +1,4 @@
-import { jsonValueSchema, modelInfoSchema } from "@motherbase/core";
+import { jsonValueSchema, modelInfoSchema, verbSchema } from "@motherbase/core";
 import { z } from "zod";
 import { modelChunkSchema } from "../agent/model-chunk";
 
@@ -21,6 +21,7 @@ export const testToolSchema = z.object({
   behavior: z.enum(["success", "tool-error", "crash"]),
   output: jsonValueSchema.optional(),
   message: z.string().optional(),
+  claim: verbSchema.optional(),
 });
 
 export type TestTool = z.infer<typeof testToolSchema>;

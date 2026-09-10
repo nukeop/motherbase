@@ -1,59 +1,20 @@
-import {
-  type APIRequestContext,
-  expect,
-  type Page,
-  test,
-} from "@playwright/test";
-import {
-  createSession,
-  registerTools,
-  SERVER_URL,
-  selectModel,
-  selectProvider,
-  setTestConfig,
-} from "./helpers";
-import { conversation } from "./wrappers";
-
-const TEST_PROVIDER = {
-  id: "tool-provider",
-  name: "Tool Provider",
-  models: [{ id: "tool-model", name: "Tool Model" }],
-};
-
-const scriptResponse = async (
-  request: APIRequestContext,
-  chunks: unknown[],
-) => {
-  await request.post(`${SERVER_URL}/_test/model`, {
-    data: {
-      provider: TEST_PROVIDER.id,
-      model: TEST_PROVIDER.models[0]!.id,
-      chunks,
-    },
-  });
-};
-
-const sendMessage = async (page: Page, text: string) => {
-  const input = page.getByPlaceholder("Send a message...");
-  await input.fill(text);
-  await input.press("Enter");
-};
+import { expect, test } from "@playwright/test";
+import { TestBackend } from "./test-backend";
+import { setTestConfig } from "./test-config";
+import { DEFAULT_TEST_PROVIDER } from "./test-provider";
+import { composer, conversation, sidebar } from "./wrappers";
 
 test.beforeEach(async ({ page, request }) => {
   await setTestConfig(request);
-  await request.post(`${SERVER_URL}/_test/providers`, {
-    data: { providers: [TEST_PROVIDER] },
-  });
-  await createSession(page);
-  await selectProvider(page, "Tool Provider");
-  await selectModel(page, "Tool Model");
+  await sidebar(page).createSession();
 });
 
 test("tool call round trip renders call, result, and continuation", async ({
   page,
   request,
 }) => {
-  await registerTools(request, [
+  const backend = new TestBackend(request, DEFAULT_TEST_PROVIDER);
+  await backend.registerTools([
     {
       name: "echo",
       description: "Echoes its input",
@@ -61,7 +22,7 @@ test("tool call round trip renders call, result, and continuation", async ({
       output: { echoed: "ping" },
     },
   ]);
-  await scriptResponse(request, [
+  await backend.scriptTurn([
     { type: "text-start" },
     { type: "text-delta", text: "Let me check." },
     {
@@ -72,13 +33,13 @@ test("tool call round trip renders call, result, and continuation", async ({
     },
     { type: "finish", reason: "tool-calls" },
   ]);
-  await scriptResponse(request, [
+  await backend.scriptTurn([
     { type: "text-start" },
     { type: "text-delta", text: "The echo came back." },
     { type: "finish", reason: "stop" },
   ]);
 
-  await sendMessage(page, "Ping the echo tool");
+  await composer(page).send("Ping the echo tool");
 
   await expect(page.getByText("The echo came back.")).toBeVisible();
   await expect(page.getByText("Let me check.")).toBeVisible();
@@ -101,7 +62,8 @@ test("tool error becomes a result and the conversation continues", async ({
   page,
   request,
 }) => {
-  await registerTools(request, [
+  const backend = new TestBackend(request, DEFAULT_TEST_PROVIDER);
+  await backend.registerTools([
     {
       name: "flaky",
       description: "Always fails on purpose",
@@ -109,7 +71,7 @@ test("tool error becomes a result and the conversation continues", async ({
       message: "file not found",
     },
   ]);
-  await scriptResponse(request, [
+  await backend.scriptTurn([
     { type: "text-start" },
     { type: "text-delta", text: "Trying the flaky tool." },
     {
@@ -120,13 +82,13 @@ test("tool error becomes a result and the conversation continues", async ({
     },
     { type: "finish", reason: "tool-calls" },
   ]);
-  await scriptResponse(request, [
+  await backend.scriptTurn([
     { type: "text-start" },
     { type: "text-delta", text: "The file was missing." },
     { type: "finish", reason: "stop" },
   ]);
 
-  await sendMessage(page, "Use the flaky tool");
+  await composer(page).send("Use the flaky tool");
 
   await expect(page.getByText("The file was missing.")).toBeVisible();
 
@@ -142,7 +104,8 @@ test("tool crash becomes a result and the conversation continues", async ({
   page,
   request,
 }) => {
-  await registerTools(request, [
+  const backend = new TestBackend(request, DEFAULT_TEST_PROVIDER);
+  await backend.registerTools([
     {
       name: "buggy",
       description: "Throws an unexpected error",
@@ -150,7 +113,7 @@ test("tool crash becomes a result and the conversation continues", async ({
       message: "unexpected explosion",
     },
   ]);
-  await scriptResponse(request, [
+  await backend.scriptTurn([
     { type: "text-start" },
     { type: "text-delta", text: "Trying the buggy tool." },
     {
@@ -161,13 +124,13 @@ test("tool crash becomes a result and the conversation continues", async ({
     },
     { type: "finish", reason: "tool-calls" },
   ]);
-  await scriptResponse(request, [
+  await backend.scriptTurn([
     { type: "text-start" },
     { type: "text-delta", text: "Something went wrong inside the tool." },
     { type: "finish", reason: "stop" },
   ]);
 
-  await sendMessage(page, "Use the buggy tool");
+  await composer(page).send("Use the buggy tool");
 
   await expect(
     page.getByText("Something went wrong inside the tool."),
@@ -185,7 +148,8 @@ test("unknown tool name produces an error result", async ({
   page,
   request,
 }) => {
-  await scriptResponse(request, [
+  const backend = new TestBackend(request, DEFAULT_TEST_PROVIDER);
+  await backend.scriptTurn([
     { type: "text-start" },
     { type: "text-delta", text: "Engaging the warp drive." },
     {
@@ -196,13 +160,13 @@ test("unknown tool name produces an error result", async ({
     },
     { type: "finish", reason: "tool-calls" },
   ]);
-  await scriptResponse(request, [
+  await backend.scriptTurn([
     { type: "text-start" },
     { type: "text-delta", text: "That tool does not exist." },
     { type: "finish", reason: "stop" },
   ]);
 
-  await sendMessage(page, "Engage the warp drive");
+  await composer(page).send("Engage the warp drive");
 
   await expect(page.getByText("That tool does not exist.")).toBeVisible();
 
@@ -218,7 +182,8 @@ test("multiple tool calls in one message render in order", async ({
   page,
   request,
 }) => {
-  await registerTools(request, [
+  const backend = new TestBackend(request, DEFAULT_TEST_PROVIDER);
+  await backend.registerTools([
     {
       name: "alpha",
       description: "First tool",
@@ -232,7 +197,7 @@ test("multiple tool calls in one message render in order", async ({
       output: "beta output",
     },
   ]);
-  await scriptResponse(request, [
+  await backend.scriptTurn([
     { type: "text-start" },
     { type: "text-delta", text: "Running both tools." },
     {
@@ -249,13 +214,13 @@ test("multiple tool calls in one message render in order", async ({
     },
     { type: "finish", reason: "tool-calls" },
   ]);
-  await scriptResponse(request, [
+  await backend.scriptTurn([
     { type: "text-start" },
     { type: "text-delta", text: "Both tools are done." },
     { type: "finish", reason: "stop" },
   ]);
 
-  await sendMessage(page, "Run alpha and beta");
+  await composer(page).send("Run alpha and beta");
 
   await expect(page.getByText("Both tools are done.")).toBeVisible();
 

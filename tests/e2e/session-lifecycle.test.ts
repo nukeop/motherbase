@@ -1,61 +1,36 @@
 import { expect, test } from "@playwright/test";
-import {
-  createSession,
-  SERVER_URL,
-  selectModel,
-  selectProvider,
-  setTestConfig,
-} from "./helpers";
-
-const TEST_PROVIDER = {
-  id: "lifecycle-provider",
-  name: "Lifecycle Provider",
-  models: [{ id: "lifecycle-model", name: "Lifecycle Model" }],
-};
-
-const RESPONSE_CHUNKS = [
-  { type: "text-start" },
-  { type: "text-delta", text: "Hello" },
-  { type: "text-delta", text: " from" },
-  { type: "text-delta", text: " Motherbase" },
-  { type: "finish", reason: "stop" },
-];
+import { TestBackend } from "./test-backend";
+import { setTestConfig } from "./test-config";
+import { DEFAULT_TEST_PROVIDER } from "./test-provider";
+import { composer, currentSessionId, sidebar } from "./wrappers";
 
 test.beforeEach(async ({ page, request }) => {
   await setTestConfig(request);
-  await request.post(`${SERVER_URL}/_test/providers`, {
-    data: { providers: [TEST_PROVIDER] },
-  });
-  await request.post(`${SERVER_URL}/_test/model`, {
-    data: {
-      provider: "lifecycle-provider",
-      model: "lifecycle-model",
-      chunks: RESPONSE_CHUNKS,
-    },
-  });
-  await createSession(page);
+  await new TestBackend(request, DEFAULT_TEST_PROVIDER).scriptTurn([
+    { type: "text-start" },
+    { type: "text-delta", text: "Hello" },
+    { type: "text-delta", text: " from" },
+    { type: "text-delta", text: " Motherbase" },
+    { type: "finish", reason: "stop" },
+  ]);
+  await sidebar(page).createSession();
 });
 
 test("user sends a message and sees the streamed response", async ({
   page,
 }) => {
-  await selectProvider(page, "Lifecycle Provider");
-  await selectModel(page, "Lifecycle Model");
-
-  await page.getByPlaceholder("Send a message...").fill("Hello Motherbase");
-  await page.keyboard.press("Enter");
+  await composer(page).send("Hello Motherbase");
 
   await expect(page.getByText("Hello Motherbase")).toBeVisible();
   await expect(page.getByText("Hello from Motherbase")).toBeVisible();
 });
 
 test("user deletes a session from the sidebar", async ({ page }) => {
-  const sessionId = page.url().split("/sessions/")[1];
-  const sessionItem = page.getByTestId(`session-${sessionId}`);
+  const session = sidebar(page).session(currentSessionId(page));
 
-  await expect(sessionItem).toBeVisible();
-  await sessionItem.getByTestId("delete-session").click();
+  await expect(session.root).toBeVisible();
+  await session.deleteButton.click();
 
-  await expect(sessionItem).not.toBeVisible();
+  await expect(session.root).not.toBeVisible();
   await expect(page).toHaveURL("/");
 });
