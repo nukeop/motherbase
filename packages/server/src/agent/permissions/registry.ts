@@ -1,3 +1,6 @@
+import { projectGrants } from "@motherbase/core";
+import { getHistory } from "../../sessions/store";
+import { sessionDirectoryGrants } from "./session-grants";
 import { SessionPermissions } from "./session-permissions";
 
 type SessionLike = {
@@ -13,7 +16,10 @@ export class PermissionsRegistry {
     if (existing) {
       return existing;
     }
-    const created = new SessionPermissions(session.id, session.directory);
+    const created = new SessionPermissions(session.id, [
+      ...sessionDirectoryGrants(session.directory),
+      ...projectGrants(getHistory(session.id)),
+    ]);
     this.#sessions.set(session.id, created);
     return created;
   }

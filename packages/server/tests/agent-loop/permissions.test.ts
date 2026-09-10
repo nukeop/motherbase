@@ -300,6 +300,118 @@ describe("permissions in the agent loop", () => {
     ).toEqual([replyEntry]);
   });
 
+  test("reopening a session keeps an earlier always approval", async () => {
+    const scenario = new Scenario();
+    scenario.withPermissions();
+    scenario.withTools([claimedReadTool]);
+
+    scriptToolCallTurn(scenario, [
+      {
+        toolCallId: "call-1",
+        toolName: "read",
+        input: { path: "/tmp/project/a.txt" },
+      },
+    ]);
+    scriptTextReply(scenario, "Read done");
+
+    const firstSend = scenario.sendMessage("Read the file");
+    const { request } = await scenario.waitFor("permission-requested");
+    bus.emit(scenario.session.id, "permission-replied", {
+      requestId: request.id,
+      reply: { decision: "always", prefix: "/tmp/project" },
+    });
+    await firstSend;
+
+    scenario.withPermissions();
+
+    scriptToolCallTurn(scenario, [
+      {
+        toolCallId: "call-2",
+        toolName: "read",
+        input: { path: "/tmp/project/b.txt" },
+      },
+    ]);
+    scriptTextReply(scenario, "Read again");
+
+    await scenario.sendMessage("Read the other file");
+
+    expect(scenario.messages.slice(-3)).toEqual([
+      {
+        kind: "message",
+        role: "assistant",
+        parts: [
+          {
+            type: "tool-call",
+            toolCallId: "call-2",
+            toolName: "read",
+            input: { path: "/tmp/project/b.txt" },
+          },
+        ],
+      },
+      {
+        kind: "tool-result",
+        toolCallId: "call-2",
+        toolName: "read",
+        output: { read: "/tmp/project/b.txt" },
+        outcome: "success",
+      },
+      {
+        kind: "message",
+        role: "assistant",
+        parts: [{ type: "text", text: "Read again" }],
+      },
+    ]);
+  });
+
+  test("the session directory is writable without asking", async () => {
+    const scenario = new Scenario();
+    scenario.withPermissions("/tmp/project");
+    scenario.withTools([claimedWriteTool]);
+
+    scriptToolCallTurn(scenario, [
+      {
+        toolCallId: "call-1",
+        toolName: "write",
+        input: { path: "/tmp/project/out.txt" },
+      },
+    ]);
+    scriptTextReply(scenario, "Written");
+
+    await scenario.sendMessage("Write the file");
+
+    expect(scenario.messages).toEqual([
+      {
+        kind: "message",
+        role: "user",
+        parts: [{ type: "text", text: "Write the file" }],
+      },
+      {
+        kind: "message",
+        role: "assistant",
+        parts: [
+          {
+            type: "tool-call",
+            toolCallId: "call-1",
+            toolName: "write",
+            input: { path: "/tmp/project/out.txt" },
+          },
+        ],
+      },
+      {
+        kind: "tool-result",
+        toolCallId: "call-1",
+        toolName: "write",
+        output: { wrote: "/tmp/project/out.txt" },
+        outcome: "success",
+      },
+      {
+        kind: "message",
+        role: "assistant",
+        parts: [{ type: "text", text: "Written" }],
+      },
+    ]);
+  });
+
   test("a read approval does not cover a write to the same path", async () => {
     const scenario = new Scenario();
     scenario.withPermissions();

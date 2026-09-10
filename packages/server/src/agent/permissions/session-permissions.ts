@@ -15,16 +15,14 @@ type Pending = {
 };
 
 export class SessionPermissions {
-  readonly #grants = new SessionGrants();
+  readonly #grants: SessionGrants;
   readonly #pending = new Map<string, Pending>();
 
   constructor(
     private readonly sessionId: string,
-    directory: string | null,
+    initialClaims: readonly Claim[],
   ) {
-    if (directory !== null) {
-      this.#grants.add({ verb: "read", path: directory });
-    }
+    this.#grants = new SessionGrants(initialClaims);
     bus.on(sessionId, "permission-replied", (replied) => this.settle(replied));
   }
 

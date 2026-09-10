@@ -1,6 +1,10 @@
 import { z } from "zod";
 import { jsonValueSchema } from "./json";
-import { permissionOutcomeSchema, permissionRequestSchema } from "./permission";
+import {
+  type Claim,
+  permissionOutcomeSchema,
+  permissionRequestSchema,
+} from "./permission";
 
 export const toolCallPartSchema = z.object({
   type: z.literal("tool-call"),
@@ -82,3 +86,9 @@ export const projectForModel = (
   history.filter(
     (entry) => entry.kind === "message" || entry.kind === "tool-result",
   );
+
+export const projectGrants = (history: readonly HistoryEntry[]): Claim[] =>
+  history
+    .filter((entry) => entry.kind === "permission-reply")
+    .map((entry) => entry.outcome.granted)
+    .filter((granted) => granted !== null);

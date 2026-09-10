@@ -1,6 +1,8 @@
 import type { LanguageModelV3StreamPart } from "@ai-sdk/provider";
+import { projectGrants } from "@motherbase/core";
 import type { ModelChunk } from "../../src/agent/model-chunk";
 import { createModelClient } from "../../src/agent/model-client";
+import { sessionDirectoryGrants } from "../../src/agent/permissions/session-grants";
 import { SessionPermissions } from "../../src/agent/permissions/session-permissions";
 import { Runner } from "../../src/agent/runner";
 import type { ToolDefinition } from "../../src/agent/tools/definition";
@@ -46,8 +48,11 @@ export class Scenario {
     this.#tools = tools;
   }
 
-  withPermissions(): void {
-    this.#permissions = new SessionPermissions(this.session.id, null);
+  withPermissions(sessionDirectory: string | null = null): void {
+    this.#permissions = new SessionPermissions(this.session.id, [
+      ...sessionDirectoryGrants(sessionDirectory),
+      ...projectGrants(getHistory(this.session.id)),
+    ]);
   }
 
   waitFor<Name extends EventName>(name: Name): Promise<ServerEvents[Name]> {
