@@ -26,6 +26,10 @@ export class SessionPermissions {
     bus.on(sessionId, "permission-replied", (replied) => this.settle(replied));
   }
 
+  hasPending(requestId: string): boolean {
+    return this.#pending.has(requestId);
+  }
+
   async authorize(toolName: string, claim: Claim): Promise<void> {
     if (this.#grants.covers(claim)) {
       return;

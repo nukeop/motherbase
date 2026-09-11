@@ -114,8 +114,16 @@ export const sessionsApi = new Hono()
     requireSession,
     zValidator("json", permissionReplySchema),
     (ctx) => {
+      const requestId = ctx.req.param("requestId");
+      const live = permissions.find(ctx.var.session.id);
+      if (!live?.hasPending(requestId)) {
+        return ctx.json(
+          { error: "This permission request is no longer active." },
+          409,
+        );
+      }
       bus.emit(ctx.var.session.id, "permission-replied", {
-        requestId: ctx.req.param("requestId"),
+        requestId,
         reply: ctx.req.valid("json"),
       });
       return ctx.body(null, 204);

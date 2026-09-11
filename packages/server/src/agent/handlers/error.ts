@@ -1,7 +1,7 @@
 import { getLogger } from "@logtape/logtape";
 import type { ErrorEntry } from "@motherbase/core";
-import { appendEntry } from "../../sessions/store";
 import { bus } from "../../events";
+import { appendEntry } from "../../sessions/store";
 import type { StateHandler } from "../types";
 
 const logger = getLogger(["Motherbase", "Agent", "Error"]);

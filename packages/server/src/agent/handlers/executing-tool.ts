@@ -7,9 +7,9 @@ import {
   toError,
 } from "@motherbase/core";
 import { z } from "zod";
+import { bus } from "../../events";
 import { appendEntry } from "../../sessions/store";
 import { type ToolDefinition, ToolError } from "../tools/definition";
-import { bus } from "../../events";
 import type { Authorize, StateHandler } from "../types";
 
 const logger = getLogger(["Motherbase", "Agent", "ExecutingTool"]);

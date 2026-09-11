@@ -1,5 +1,5 @@
-import { appendEntry } from "../../sessions/store";
 import { bus } from "../../events";
+import { appendEntry } from "../../sessions/store";
 import type { StateHandler } from "../types";
 
 export const completing: StateHandler = async (ctx) => {
