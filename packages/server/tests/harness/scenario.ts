@@ -1,12 +1,13 @@
 import type { LanguageModelV3StreamPart } from "@ai-sdk/provider";
-import { projectGrants } from "@motherbase/core";
+import type { PermissionReply } from "@motherbase/core";
 import type { ModelChunk } from "../../src/agent/model-chunk";
 import { createModelClient } from "../../src/agent/model-client";
-import { sessionDirectoryGrants } from "../../src/agent/permissions/session-grants";
-import { SessionPermissions } from "../../src/agent/permissions/session-permissions";
+import { permissions } from "../../src/agent/permissions";
+import type { SessionPermissions } from "../../src/agent/permissions/session-permissions";
 import { Runner } from "../../src/agent/runner";
 import type { ToolDefinition } from "../../src/agent/tools/definition";
 import type { Authorize } from "../../src/agent/types";
+import { app } from "../../src/api";
 import { bus } from "../../src/events";
 import type {
   EventName,
@@ -44,15 +45,22 @@ export class Scenario {
     return this.#tools;
   }
 
+  get permissions(): SessionPermissions {
+    if (!this.#permissions) {
+      throw new Error("call withPermissions() first");
+    }
+    return this.#permissions;
+  }
+
   withTools(tools: readonly ToolDefinition[]): void {
     this.#tools = tools;
   }
 
   withPermissions(sessionDirectory: string | null = null): void {
-    this.#permissions = new SessionPermissions(this.session.id, [
-      ...sessionDirectoryGrants(sessionDirectory),
-      ...projectGrants(getHistory(this.session.id)),
-    ]);
+    this.#permissions = permissions.forSession({
+      id: this.session.id,
+      directory: sessionDirectory,
+    });
   }
 
   waitFor<Name extends EventName>(name: Name): Promise<ServerEvents[Name]> {
@@ -62,6 +70,20 @@ export class Scenario {
         resolve(payload);
       });
     });
+  }
+
+  async replyToPermission(
+    requestId: string,
+    reply: PermissionReply,
+  ): Promise<Response> {
+    return await app.request(
+      `/sessions/${this.session.id}/permissions/${requestId}`,
+      {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify(reply),
+      },
+    );
   }
 
   scriptTurn(chunks: ModelChunk[]): void {
