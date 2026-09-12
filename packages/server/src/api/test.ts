@@ -26,6 +26,7 @@ export const testApi = new Hono()
 
       for (const provider of providers) {
         const models = provider.models;
+        scripts.forget(provider.id);
         registerProvider({
           id: provider.id,
           name: provider.name,

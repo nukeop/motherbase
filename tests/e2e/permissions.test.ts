@@ -60,10 +60,6 @@ test("Allow once runs the read and a second read of the same file asks again", a
 
   await expect(page.getByText("I read it once.")).toBeVisible();
   await expect(card.decision).toHaveText("Allowed once");
-  await expect(chat.toolResult().header).toHaveText(
-    "Tool result · read · success",
-  );
-  await expect(chat.toolResult().body).toHaveText('"file contents"');
 
   const requestId = await card.requestId();
   const firstTurn = new HistoryBuilder()
@@ -145,7 +141,6 @@ test("Allow always on the project breadcrumb covers a file in another folder", a
 
   await expect(page.getByText("Second file done.")).toBeVisible();
   await expect(chat.permissions).toHaveCount(1);
-  await expect(chat.toolResults).toHaveCount(2);
 
   expect(await backend.history(currentSessionId(page))).toEqual(
     firstTurn

@@ -7,22 +7,28 @@ type ModelScript = {
   error?: string;
 };
 
-const key = (providerId: string, modelId: string) => `${providerId}:${modelId}`;
+type ProviderScripts = Map<string, ModelScript[]>;
 
 export class TestScripts {
-  #scripts = new Map<string, ModelScript[]>();
+  #providers = new Map<string, ProviderScripts>();
+
+  forget(providerId: string): void {
+    this.#providers.delete(providerId);
+  }
 
   enqueue(providerId: string, modelId: string, script: ModelScript): void {
-    const queue = this.#scripts.get(key(providerId, modelId)) ?? [];
+    const provider = this.#providers.get(providerId) ?? new Map();
+    const queue = provider.get(modelId) ?? [];
     queue.push(script);
-    this.#scripts.set(key(providerId, modelId), queue);
+    provider.set(modelId, queue);
+    this.#providers.set(providerId, provider);
   }
 
   buildStream(
     providerId: string,
     modelId: string,
   ): ReadableStream<LanguageModelV3StreamPart> {
-    const script = this.#scripts.get(key(providerId, modelId))?.shift();
+    const script = this.#providers.get(providerId)?.get(modelId)?.shift();
     if (!script) {
       throw new Error(`No script registered for ${providerId}:${modelId}`);
     }
