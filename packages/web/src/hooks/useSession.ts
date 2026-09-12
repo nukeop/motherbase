@@ -62,6 +62,14 @@ export const useSession = (sessionId: string) => {
       queryClient.invalidateQueries({ queryKey: sessionKey(sessionId) });
     });
 
+    source.addEventListener("permission-requested", () => {
+      queryClient.invalidateQueries({ queryKey: sessionKey(sessionId) });
+    });
+
+    source.addEventListener("permission-resolved", () => {
+      queryClient.invalidateQueries({ queryKey: sessionKey(sessionId) });
+    });
+
     source.addEventListener("turn-completed", () => {
       setStreamingParts(null);
       queryClient.invalidateQueries({ queryKey: sessionKey(sessionId) });

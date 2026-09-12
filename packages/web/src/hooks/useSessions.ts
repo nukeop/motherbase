@@ -16,7 +16,7 @@ export const useSessions = () => {
   const createSession = useMutation({
     mutationFn: async (directory?: string) => {
       const response = await client.sessions.$post({ json: { directory } });
-      return unwrap(response).json();
+      return (await unwrap(response)).json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: sessionsKey });

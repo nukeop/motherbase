@@ -7,11 +7,22 @@ export const BASE_URL = `http://localhost:${API_PORT}`;
 
 export const client = hc<AppType>(BASE_URL);
 
-export const unwrap = <T extends ClientResponse<unknown>>(
+const isJson = (response: Response): boolean =>
+  response.headers.get("content-type")?.includes("application/json") ?? false;
+
+const errorMessage = async (response: Response): Promise<string> => {
+  if (isJson(response)) {
+    const { error } = await response.json();
+    return error;
+  }
+  return `Request failed: ${response.status}`;
+};
+
+export const unwrap = async <T extends ClientResponse<unknown>>(
   response: T,
-): Extract<T, { ok: true }> => {
+): Promise<Extract<T, { ok: true }>> => {
   if (!response.ok) {
-    throw new Error(`Request failed: ${response.status}`);
+    throw new Error(await errorMessage(response));
   }
   return response as Extract<T, { ok: true }>;
 };
