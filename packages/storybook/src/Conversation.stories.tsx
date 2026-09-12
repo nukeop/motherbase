@@ -12,11 +12,39 @@ type Story = StoryObj<typeof Conversation>;
 export const Default: Story = {
   render: () => (
     <Conversation>
-      <UserMessage text="I hope you brought a better hamburger this time, Kazuhira." />
-      <AssistantMessage text="Right... well..." />
-      <UserMessage text="The last one was lacking in every way. The patty was too thin, the bun too dry. And the lettuce... days old at best." />
-      <AssistantMessage text="Huh... hey! That was 100% all-beef patty and no shortening in the bun, either." />
-      <UserMessage text="Hm. Nature's blessings... unadulterated... in hamburger form. Is that it? But when taste falls short, so does our gratitude to Nature. Making such precious blessings unpalatable is sacrilege." />
+      <UserMessage
+        parts={[
+          {
+            type: "text",
+            text: "I hope you brought a better hamburger this time, Kazuhira.",
+          },
+        ]}
+      />
+      <AssistantMessage parts={[{ type: "text", text: "Right... well..." }]} />
+      <UserMessage
+        parts={[
+          {
+            type: "text",
+            text: "The last one was lacking in every way. The patty was too thin, the bun too dry. And the lettuce... days old at best.",
+          },
+        ]}
+      />
+      <AssistantMessage
+        parts={[
+          {
+            type: "text",
+            text: "Huh... hey! That was 100% all-beef patty and no shortening in the bun, either.",
+          },
+        ]}
+      />
+      <UserMessage
+        parts={[
+          {
+            type: "text",
+            text: "Hm. Nature's blessings... unadulterated... in hamburger form. Is that it? But when taste falls short, so does our gratitude to Nature. Making such precious blessings unpalatable is sacrilege.",
+          },
+        ]}
+      />
     </Conversation>
   ),
 };

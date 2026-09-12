@@ -21,6 +21,7 @@ export {
   resolveResultWidget,
   ToolApproval,
   type ToolCallWidgetProps,
+  ToolDecision,
   ToolErrorBlock,
   type ToolResultWidgetProps,
   WidgetBoundary,

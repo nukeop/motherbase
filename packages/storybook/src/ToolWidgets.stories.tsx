@@ -1,6 +1,7 @@
 import {
   ReadToolCall,
   ToolApproval,
+  ToolDecision,
   ToolErrorBlock,
   ToolResultBlock,
 } from "@motherbase/ui";
@@ -71,6 +72,60 @@ export const Approval: Story = {
         onAllowOnce={() => {}}
         onAllowAlways={() => {}}
         onDeny={() => {}}
+      />
+    </div>
+  ),
+};
+
+export const ApprovalSubmitting: Story = {
+  render: () => (
+    <div className="w-200 bg-cream p-4">
+      <ToolApproval
+        toolName="read"
+        path="/tmp/build/cache.json"
+        disabled
+        onAllowOnce={() => {}}
+        onAllowAlways={() => {}}
+        onDeny={() => {}}
+      />
+    </div>
+  ),
+};
+
+export const DecisionAllowedOnce: Story = {
+  render: () => (
+    <div className="w-200 bg-cream p-4">
+      <ToolDecision
+        toolName="read"
+        path="/tmp/build/cache.json"
+        outcome={{ decision: "once", granted: null }}
+      />
+    </div>
+  ),
+};
+
+export const DecisionAllowedAlways: Story = {
+  render: () => (
+    <div className="w-200 bg-cream p-4">
+      <ToolDecision
+        toolName="read"
+        path="/tmp/build/cache.json"
+        outcome={{
+          decision: "always",
+          granted: { verb: "read", path: "/tmp/build" },
+        }}
+      />
+    </div>
+  ),
+};
+
+export const DecisionDenied: Story = {
+  render: () => (
+    <div className="w-200 bg-cream p-4">
+      <ToolDecision
+        toolName="read"
+        path="/tmp/build/cache.json"
+        outcome={{ decision: "deny", granted: null }}
       />
     </div>
   ),

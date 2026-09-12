@@ -6,7 +6,7 @@ import { sessionKey } from "./query-keys";
 export const usePermissionReply = (sessionId: string) => {
   const queryClient = useQueryClient();
 
-  const { mutateAsync: replyToPermission } = useMutation({
+  return useMutation({
     mutationFn: async ({ requestId, reply }: PermissionReplied) => {
       const response = await client.sessions[":id"].permissions[
         ":requestId"
@@ -20,6 +20,4 @@ export const usePermissionReply = (sessionId: string) => {
       queryClient.invalidateQueries({ queryKey: sessionKey(sessionId) });
     },
   });
-
-  return replyToPermission;
 };

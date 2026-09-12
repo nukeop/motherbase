@@ -5,10 +5,7 @@ import {
   messagePartSchema,
   toolResultEntrySchema,
 } from "./history";
-import {
-  permissionOutcomeSchema,
-  permissionRequestSchema,
-} from "./permission";
+import { permissionOutcomeSchema, permissionRequestSchema } from "./permission";
 
 export const messageInProgressSchema = z.object({
   type: z.literal("message-in-progress"),

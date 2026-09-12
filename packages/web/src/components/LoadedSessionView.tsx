@@ -1,23 +1,7 @@
 import type { HistoryEntry, MessagePart } from "@motherbase/core";
-import {
-  AssistantMessage,
-  Conversation,
-  ErrorMessage,
-  PromptInput,
-  resolveResultWidget,
-  ToolResultBlock,
-  UserMessage,
-  WidgetBoundary,
-} from "@motherbase/ui";
+import { AssistantMessage, Conversation, PromptInput } from "@motherbase/ui";
 import { useModelSelection } from "../hooks/useModelSelection";
-
-const userMessageText = (parts: MessagePart[]): string => {
-  const textPart = parts.find((part) => part.type === "text");
-  if (textPart === undefined) {
-    return "";
-  }
-  return textPart.text;
-};
+import { HistoryEntries } from "./HistoryEntries";
 
 type LoadedSessionViewProps = {
   sessionId: string;
@@ -41,41 +25,7 @@ export const LoadedSessionView = ({
   return (
     <div className="flex flex-1 flex-col min-h-0">
       <Conversation>
-        {messages.map((entry, index) => {
-          if (entry.kind === "error") {
-            const key = `error-${index}`;
-            return <ErrorMessage key={key} message={entry.message} />;
-          }
-          if (entry.kind === "tool-result") {
-            const key = `tool-result-${index}`;
-            const ResultWidget = resolveResultWidget(entry.toolName);
-            return (
-              <WidgetBoundary
-                key={key}
-                fallback={
-                  <ToolResultBlock
-                    toolName={entry.toolName}
-                    outcome={entry.outcome}
-                    output={entry.output}
-                  />
-                }
-              >
-                <ResultWidget
-                  toolName={entry.toolName}
-                  outcome={entry.outcome}
-                  output={entry.output}
-                />
-              </WidgetBoundary>
-            );
-          }
-          const key = `${entry.role}-${index}`;
-          if (entry.role === "user") {
-            return (
-              <UserMessage key={key} text={userMessageText(entry.parts)} />
-            );
-          }
-          return <AssistantMessage key={key} parts={entry.parts} />;
-        })}
+        <HistoryEntries sessionId={sessionId} entries={messages} />
         {streamingParts && <AssistantMessage parts={streamingParts} />}
       </Conversation>
       <PromptInput {...modelSelection} onSubmit={sendMessage} />
